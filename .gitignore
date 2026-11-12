@@ -1,0 +1,20 @@
+# Keep secrets out of Git
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Dependencies and build output
+**/node_modules/
+**/dist/
+**/dist-ssr/
+
+# Local generated files
+**/*.log
+**/*.local
+backend/upload/
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
