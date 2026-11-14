@@ -18,7 +18,11 @@ const ProductSchema = mongoose.Schema({
             validator:Number.isInteger,
             message:"Stock must be a whole number."
         }
-    }
+    },
+    isFeatured:{
+        type:Boolean,
+        default:false,
+    },
 
 },{
     timestamps:true

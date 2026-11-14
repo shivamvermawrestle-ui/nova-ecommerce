@@ -3,21 +3,26 @@ import ProductModel from "../../Model/productModel.js";
 
 const UploadProduct = async (req, res) => {
   try {
-    const sessionUserId = req.userId;
-    const hasPermission = await uploadProductPermission(sessionUserId);
+    const hasPermission = await uploadProductPermission(req.userId);
+
     if (!hasPermission) {
-      throw new Error("Permission denied");
+      return res.status(403).json({
+        message: "Only an admin or farmer can add products.",
+        success: false,
+      });
     }
+
     const uploadProduct = new ProductModel(req.body);
     const saveProduct = await uploadProduct.save();
-    res.status(200).json({
-      message: "Product Uploaded Successfully",
+
+    return res.status(201).json({
+      message: "Product uploaded successfully.",
       success: true,
       data: saveProduct,
     });
   } catch (error) {
-    res.status(400).json({
-      message: error.message || error,
+    return res.status(400).json({
+      message: error.message || "Could not save this product.",
       success: false,
     });
   }

@@ -7,8 +7,8 @@ dotenv.config();
 const email = process.argv[2];
 
 if (!email) {
-  console.log("\n❌ Please provide an email address!");
-  console.log("👉 Example: node make-admin.js test@example.com\n");
+  console.log(" Please provide an email address!");
+  console.log(" Example: node make-admin.js test@example.com\n");
   process.exit(1);
 }
 
@@ -26,13 +26,13 @@ mongoose
     );
 
     if (!user) {
-      console.log(`\n❌ User with email "${email}" nahi mila! Pehle register karein.`);
+      console.log(` User with email "${email}" not found! Pehle register .`);
     } else {
-      console.log("\n🎉 Mubarak ho! User ab ADMIN ban gaya hai:");
-      console.log(`👤 Name: ${user.name}`);
-      console.log(`📧 Email: ${user.email}`);
-      console.log(`🛡️ Role: ${user.role}`);
-      console.log("\nAb frontend par logout karke fir se login karein!");
+      console.log(" The user is now become a admin");
+      console.log(` Name: ${user.name}`);
+      console.log(`📧Email: ${user.email}`);
+      console.log(` Role: ${user.role}`);
+      console.log("\nnow on frontend logout and then login again!");
     }
     await mongoose.disconnect();
     process.exit(0);

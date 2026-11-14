@@ -9,17 +9,23 @@ import bodyParser from 'body-parser'
 const app = express()
 const PORT = process.env.PORT || 5002
 
+const frontendOrigins = (process.env.FRONTEND_URL || '')
+  .split(',')
+  .map(url => url.trim().replace(/\/$/, ''))
+  .filter(Boolean)
+
 const allowedOrigins = [
-  (process.env.FRONTEND_URL || '').trim(),
+  ...frontendOrigins,
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:3000'
-].filter(Boolean)
+]
 
 app.use(cors({
     origin: function (origin, callback) {
         if (!origin ||
             allowedOrigins.includes(origin) ||
+            origin.endsWith('.vercel.app') ||
             origin.startsWith('http://localhost:') ||
             origin.startsWith('http://127.0.0.1:') ||
             origin.startsWith('http://10.') ||

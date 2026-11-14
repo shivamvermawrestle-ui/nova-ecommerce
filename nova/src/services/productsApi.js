@@ -6,7 +6,17 @@ export const productsApi = createApi({
 
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_BASE_URL || '/api',
-    credentials:'include'
+    credentials: 'include',
+    prepareHeaders: (headers) => {
+      const token =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('nova_token') || localStorage.getItem('token')
+          : null
+      if (token) {
+        headers.set('authorization', `Bearer ${token}`)
+      }
+      return headers
+    }
   }),
   tagTypes:['Cart','CartCount','Products',"Users","Orders","Wishlist","Reviews"],
 
@@ -55,12 +65,30 @@ invalidatesTags:['Cart']
       transformResponse: (response) => response.data,
       providesTags:['Products']
     }),
-    getPaginatedProducts:builder.query({
-query:({page=1,limit=12 })=>({
+    getFeaturedProducts:builder.query({
+query:()=>({
   url:"/get-product",
-  params:{page,limit},
+  params:{
+    featured:true,
+    page:1,
+    limit:8,
+  }
 }),
+transformResponse:(response)=>response.data,
 providesTags:["Products"]
+    }),
+    getPaginatedProducts: builder.query({
+      query: ({
+        page = 1,
+        limit = 12,
+        search = "",
+        category = "",
+        sort = "newest",
+      } = {}) => ({
+        url: "/get-product",
+        params: { page, limit, search, category, sort },
+      }),
+      providesTags: ["Products"],
     }),
     uploadProductImage:builder.mutation({
       query:(body)=>({
@@ -137,8 +165,16 @@ deleteProduct:builder.mutation({
       query: (credentials) => ({
         url: '/login',
         method: 'POST',
-        body:credentials,
+        body: credentials,
       }),
+      async onQueryStarted(_arg, { queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          if (data?.data && typeof window !== 'undefined') {
+            localStorage.setItem('nova_token', data.data)
+          }
+        } catch {}
+      },
     }),
     getCurrentUser: builder.query({
       query: () => '/user-details',
@@ -149,7 +185,17 @@ deleteProduct:builder.mutation({
 query:()=>({
   url:'/logout',
   method:'GET'
-})
+}),
+      async onQueryStarted(_arg, { queryFulfilled }) {
+        try {
+          await queryFulfilled
+        } finally {
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('nova_token')
+            localStorage.removeItem('token')
+          }
+        }
+      },
       }),
       // USERS 
 getUsers:builder.query({
@@ -186,9 +232,10 @@ updateUser:builder.mutation({
       }),
       // PAYMENT 
       createPaymentSession:builder.mutation({
-        query:()=>({
+        query:(checkoutData={})=>({
           url:'/payment',
         method:'POST',
+        body:checkoutData
         })
       }),
 getCheckoutConfirmation:builder.query({
@@ -277,5 +324,7 @@ useAddWishlistProductMutation,
 useRemoveWishlistProductMutation,
 useGetProductReviewsQuery,
 useSubmitProductReviewMutation,
+useGetFeaturedProductsQuery,
 
 } = productsApi
+

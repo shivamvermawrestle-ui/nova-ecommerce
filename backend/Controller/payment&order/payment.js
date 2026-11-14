@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import ProductModel from "../../Model/productModel.js";
 import UserModel from "../../Model/UserModel.js";
 import stripe from "../../DataBase/stripe.js";
@@ -14,27 +15,51 @@ const payment = async (req, res) => {
       });
     }
 
-    const cartItems = await addToCartModel
-      .find({ userId: req.userId })
-      .select("productId quantity");
+    const { productId, quantity: requestedQuantity } = req.body ?? {};
+    const isBuyNow = Boolean(productId);
+    let requestedItems = [];
 
-    if (cartItems.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Your cart is empty.",
-      });
-    }
+    if (isBuyNow) {
+      const normalizedProductId = String(productId);
+      const quantity = Number(requestedQuantity ?? 1);
 
-    const requestedItems = cartItems.map((item) => {
-      const productId = item.productId?.toString();
-      const quantity = Number(item.quantity);
-
-      if (!productId || !Number.isInteger(quantity) || quantity < 1) {
-        throw new Error("Invalid cart item.");
+      if (!mongoose.isValidObjectId(normalizedProductId)) {
+        throw new Error("Invalid product.");
       }
 
-      return { productId, quantity };
-    });
+      if (!Number.isInteger(quantity) || quantity < 1) {
+        throw new Error("Quantity must be a positive whole number.");
+      }
+
+      requestedItems = [{ productId: normalizedProductId, quantity }];
+    } else {
+      const cartItems = await addToCartModel
+        .find({ userId: req.userId })
+        .select("productId quantity");
+
+      if (cartItems.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Your cart is empty.",
+        });
+      }
+
+      requestedItems = cartItems.map((item) => {
+        const cartProductId = item.productId?.toString();
+        const quantity = Number(item.quantity);
+
+        if (
+          !cartProductId ||
+          !mongoose.isValidObjectId(cartProductId) ||
+          !Number.isInteger(quantity) ||
+          quantity < 1
+        ) {
+          throw new Error("Invalid cart item.");
+        }
+
+        return { productId: cartProductId, quantity };
+      });
+    }
 
     const products = await ProductModel.find({
       _id: { $in: requestedItems.map((item) => item.productId) },
@@ -43,11 +68,11 @@ const payment = async (req, res) => {
       products.map((product) => [String(product._id), product])
     );
 
-    const lineItems = requestedItems.map(({ productId, quantity }) => {
-      const product = productById.get(productId);
+    const lineItems = requestedItems.map(({ productId: requestedId, quantity }) => {
+      const product = productById.get(requestedId);
 
       if (!product) {
-        throw new Error("A product in your cart could not be found.");
+        throw new Error("A product could not be found.");
       }
 
       const availableStock = Number(product.stock ?? 0);
@@ -70,9 +95,11 @@ const payment = async (req, res) => {
 
       const rawImages = Array.isArray(product.productImage)
         ? product.productImage
-        : (typeof product.productImage === "string" && product.productImage ? [product.productImage] : []);
+        : typeof product.productImage === "string" && product.productImage
+          ? [product.productImage]
+          : [];
       const validImages = rawImages
-        .filter((img) => typeof img === "string" && img.startsWith("https://"))
+        .filter((image) => typeof image === "string" && image.startsWith("https://"))
         .slice(0, 8);
 
       return {
@@ -94,7 +121,9 @@ const payment = async (req, res) => {
       throw new Error("Shipping amount configuration is invalid.");
     }
 
-    const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:5173").trim().replace(/\/$/, "");
+    const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:5173")
+      .trim()
+      .replace(/\/$/, "");
 
     const params = {
       submit_type: "pay",
@@ -117,10 +146,13 @@ const payment = async (req, res) => {
         },
       ],
       customer_email: user.email,
-      metadata: { userId: String(req.userId) },
+      metadata: {
+        userId: String(req.userId),
+        checkoutType: isBuyNow ? "buy_now" : "cart",
+      },
       line_items: lineItems,
-      success_url: `${frontendUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${frontendUrl}/cancel`,
+      success_url: frontendUrl + "/success?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: frontendUrl + "/cancel",
     };
 
     const session = await stripe.checkout.sessions.create(params);

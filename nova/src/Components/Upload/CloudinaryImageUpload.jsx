@@ -49,9 +49,9 @@ const CloudinaryImageUpload = ({ value, onChange }) => {
   return (
     <div className="space-y-2">
       <label className="block">
-        <span>Product image</span>
+        <span className="text-sm font-medium text-[#202C50] dark:text-[#EAF0FA]">Product image</span>
         <input
-          className="mt-1 w-full rounded border p-3"
+          className="mt-1 w-full rounded-lg border border-[#C9D5E7] bg-white p-3 text-sm text-[#202C50] file:mr-4 file:rounded-md file:border-0 file:bg-[#DFE7F3] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[#202C50] hover:file:bg-[#C9D5E7] dark:border-[#465570] dark:bg-[#202A40] dark:text-[#EAF0FA] dark:file:bg-[#34415B] dark:file:text-[#EAF0FA]"
           type="file"
           accept="image/*"
           onChange={handleFileChange}
@@ -59,10 +59,10 @@ const CloudinaryImageUpload = ({ value, onChange }) => {
         />
       </label>
 
-      {isLoading && <p className="text-sm text-stone-500">Uploading image...</p>}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {isLoading && <p className="text-sm text-[#64718A] dark:text-[#AAB8D0]">Uploading image...</p>}
+      {error && <p className="text-sm text-[#C04452] dark:text-[#F08089]">{error}</p>}
       {!value && (
-        <p className="text-sm text-stone-500">
+        <p className="text-sm text-[#64718A] dark:text-[#AAB8D0]">
           Upload an image before saving the product.
         </p>
       )}
@@ -70,7 +70,7 @@ const CloudinaryImageUpload = ({ value, onChange }) => {
         <img
           src={value}
           alt="Product preview"
-          className="h-28 w-28 rounded-lg border object-cover"
+          className="h-28 w-28 rounded-lg border border-[#D8E1EF] dark:border-[#35435C] object-cover"
         />
       )}
     </div>
