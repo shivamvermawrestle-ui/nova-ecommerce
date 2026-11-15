@@ -58,20 +58,24 @@ app.use(async (_req, res, next) => {
     }
 })
 
+app.get('/', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Nova Backend API is running' })
+})
+
 app.use('/api', router)
 
 // DEPLOY_TARGET is set to "vercel" in the Vercel project environment.
 if (process.env.DEPLOY_TARGET !== 'vercel') {
-    ConnectedToDB()
-      .then(() => {
-        app.listen(PORT, () => {
+    app.listen(PORT, () => {
+      console.log(`Server is running on port : ${PORT}`)
+      ConnectedToDB()
+        .then(() => {
           console.log('Database connected successfully')
-          console.log(`Server is running on port : ${PORT}`)
         })
-      })
-      .catch((error) => {
-        console.error('Database connection failed:', error?.message || error)
-      })
+        .catch((error) => {
+          console.error('Database connection failed:', error?.message || error)
+        })
+    })
 }
 
 export default app

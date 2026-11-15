@@ -12,7 +12,6 @@
 # Local generated files
 **/*.log
 **/*.local
-backend/upload/
 
 # Editors and operating systems
 .vscode/
