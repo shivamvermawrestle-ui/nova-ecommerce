@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import WishlistModel from "../../Model/wishlistModel.js";
+import WishlistModel from "../../Model/WishlistModel.js";
 
 const removeWishlistProduct = async (req, res) => {
   const { productId } = req.params;

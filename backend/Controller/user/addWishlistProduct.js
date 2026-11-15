@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import WishlistModel from "../../Model/wishlistModel.js";
+import WishlistModel from "../../Model/WishlistModel.js";
 import ProductModel from "../../Model/productModel.js";
 
 const addWishlistProduct = async (req, res) => {
