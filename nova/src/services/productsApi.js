@@ -5,7 +5,11 @@ export const productsApi = createApi({
   reducerPath: 'productsApi',
 
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_BASE_URL || '/api',
+    baseUrl:
+      import.meta.env.VITE_API_BASE_URL ||
+      (import.meta.env.PROD
+        ? 'https://nova-backend-bznk.onrender.com/api'
+        : '/api'),
     credentials: 'include',
     prepareHeaders: (headers) => {
       const token =
