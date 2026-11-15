@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSignupMutation } from "../../services/productsApi";
@@ -23,10 +22,23 @@ const Signup = () => {
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
+    profilePic: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
-
+  const [passwordError, setPasswordError] = useState("");
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      setSignupData((prev) => ({
+        ...prev,
+        profilePic: reader.result,
+      }));
+    };
+  };
   const [signup, { isLoading, error }] = useSignupMutation();
 
   // Theme colors
@@ -79,11 +91,16 @@ const Signup = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    setPasswordError("");
+    if (signupData.password !== signupData.confirmPassword) {
+      setPasswordError("Passwords do not match!");
+      return;
+    }
     const sanitizedData = {
       name: (signupData.name || "").trim(),
       email: (signupData.email || "").trim().toLowerCase(),
       password: signupData.password,
+      profilePic: signupData.profilePic,
     };
 
     try {
@@ -91,7 +108,7 @@ const Signup = () => {
 
       navigate("/login", {
         state: {
-          message: "Account created successfully. Please log in.",
+          message: "Account created successfully! Please log in.",
         },
       });
     } catch {
@@ -102,9 +119,7 @@ const Signup = () => {
   return (
     <main
       className={`flex min-h-[calc(100vh-140px)] items-center justify-center px-4 py-10 transition-colors duration-200 sm:px-6 sm:py-16 ${
-        dark
-          ? "bg-[#171E30] text-[#EAF0FA]"
-          : "bg-[#F7F9FC] text-[#202C50]"
+        dark ? "bg-[#171E30] text-[#EAF0FA]" : "bg-[#F7F9FC] text-[#202C50]"
       }`}
     >
       <div className="mx-auto w-full max-w-6xl">
@@ -114,17 +129,15 @@ const Signup = () => {
             <h1
               className={`text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl lg:text-5xl ${mainText}`}
             >
-              Create your{" "}
-              <span className={accentText}>Nova</span>
+              Create your <span className={accentText}>Nova</span>
               <span className={accentText}>.</span> account
             </h1>
 
             <p
               className={`mt-3 max-w-md text-sm leading-relaxed sm:text-base ${mutedText}`}
             >
-              Join thousands of happy shoppers exploring top-rated
-              electronics, fashion, and daily deals with fast door-step
-              delivery.
+              Join thousands of happy shoppers exploring top-rated electronics,
+              fashion, and daily deals with fast door-step delivery.
             </p>
 
             {/* Animated Storyset Illustration */}
@@ -159,11 +172,11 @@ const Signup = () => {
                     <span className={accentText}>.</span>
                   </div>
 
-                  <span className={`text-[10px] font-semibold italic ${mutedText}`}>
+                  <span
+                    className={`text-[10px] font-semibold italic ${mutedText}`}
+                  >
                     Explore{" "}
-                    <span className={`${accentText} font-bold`}>
-                      Store
-                    </span>
+                    <span className={`${accentText} font-bold`}>Store</span>
                   </span>
                 </div>
 
@@ -180,6 +193,34 @@ const Signup = () => {
 
               {/* Registration Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Profile picture  */}
+                <div className="flex flex-col items-center gap-2 ">
+                  <div className="h-20 w-20 border-2 border-dashed border-gray-300 rounded-full overflow-hidden flex items-center justify-center bg-gray-50 relative">
+
+       {signupData.profilePic ? (
+                    <img
+                      src={signupData.profilePic}
+                      alt="preview"
+                      className="h-full w-full
+     object-cover"
+                    />
+                  ) : (
+                    <span className="text-xs text-gray-500 font-medium">
+                      Add Photo
+                    </span>
+                  )}
+                  </div>
+           
+             
+                  <input type="file"
+                  onChange={handleImageChange}
+                  accept="image/*"
+                  className="text-xs text-gray-600 file:mr-2 file:py-1 file:px-3 file:rounded-md file:bg-gray-200 cursor-pointer"
+                
+                  />
+                </div>
+
+
                 {/* Full Name Input */}
                 <div className="space-y-1.5">
                   <label
@@ -274,11 +315,7 @@ const Signup = () => {
                           : "text-[#8A96AA] hover:text-[#202C50]"
                       }`}
                     >
-                      {showPassword ? (
-                        <EyeOff size={17} />
-                      ) : (
-                        <Eye size={17} />
-                      )}
+                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                     </button>
                   </div>
                 </div>
@@ -299,9 +336,7 @@ const Signup = () => {
                   disabled={isLoading}
                   className={`flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold shadow-md transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 ${submitButton}`}
                 >
-                  <span>
-                    {isLoading ? "Creating account..." : "Sign Up"}
-                  </span>
+                  <span>{isLoading ? "Creating account..." : "Sign Up"}</span>
 
                   {!isLoading && <ArrowRight size={16} />}
                 </button>

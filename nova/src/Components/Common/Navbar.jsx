@@ -171,20 +171,21 @@ const Navbar = () => {
                           ? "text-[#EAF0FA] hover:bg-[#202A40]"
                           : "text-[#202C50] hover:bg-[#F7F9FC]"
                       }`}
-                    >
-                      <div
-                        className={`flex h-7 w-7 items-center justify-center rounded-full border text-xs font-bold ${
-                          dark
-                            ? "border-[#35435C] bg-[#202A40] text-[#7895C5]"
-                            : "border-[#D8E1EF] bg-[#DFE7F3] text-[#344F82]"
-                        }`}
-                      >
-                        {user.name ? (
-                          user.name.charAt(0).toUpperCase()
-                        ) : (
-                          <User size={14} />
-                        )}
-                      </div>
+                    >'
+                    {/* Desktop  user avatar  */}
+
+                    <div className="h-8 w-8 flex  items-center justify-center rounded-full border overflow-hidden bg-gray-200">
+                      {user.profilePic ? (
+                        <img src={user.profilePic} alt={user.name} className="h-full w-full object-cover" />
+                      ):user.name?(
+                        <span className="font-bold text-xs">{user.name.charAt(0).toUpperCase()}</span>
+                      ):(
+                        <User size={16}/>
+                      )}
+
+                    </div>
+
+                   
 
                       <span className="max-w-28 truncate">
                         {user.name}
