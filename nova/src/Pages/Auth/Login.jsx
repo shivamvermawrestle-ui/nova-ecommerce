@@ -277,6 +277,9 @@ const Login = () => {
                     </button>
                   </div>
                 </div>
+                <div className="flex justify-end">
+                    <Link to="/forgot-password"  className="text-xs">Forget Password?</Link>
+                </div>
                 {/* Error Banner */}
                 {error && (
                   <div

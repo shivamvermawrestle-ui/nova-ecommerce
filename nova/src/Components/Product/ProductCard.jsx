@@ -67,15 +67,15 @@ function ProductCard({ product }) {
 
   const wishlistButton = isWishlisted
     ? dark
-      ? "border-[#F08089]/40 bg-[#F08089]/15 text-[#F08089]"
-      : "border-[#C04452]/30 bg-[#C04452]/10 text-[#C04452]"
+      ? "border-[#F08089]/40 bg-[#F08089]/20 text-[#F08089] backdrop-blur-md"
+      : "border-[#C04452]/40 bg-[#C04452]/15 text-[#C04452] backdrop-blur-md"
     : dark
-      ? "border-[#35435C] bg-[#202A40]/90 text-[#8190AA] hover:text-[#F08089] hover:border-[#F08089]/40"
-      : "border-[#D8E1EF] bg-white/95 text-[#64718A] hover:text-[#C04452] hover:border-[#C04452]/40";
+      ? "border-[#35435C] bg-[#171E30]/85 text-[#8190AA] hover:text-[#F08089] hover:border-[#F08089]/40 backdrop-blur-md"
+      : "border-[#D8E1EF] bg-white/90 text-[#64718A] hover:text-[#C04452] hover:border-[#C04452]/40 backdrop-blur-md";
 
   const discountBadge = dark
-    ? "bg-[#F08089]/15 border-[#F08089]/30 text-[#F08089]"
-    : "bg-[#C04452]/10 border-[#C04452]/30 text-[#C04452]";
+    ? "border-[#F08080]/40 bg-[#171E30]/90 text-[#F08080] shadow-sm backdrop-blur-md"
+    : "border-[#B74747]/30 bg-white/95 text-[#B74747] shadow-sm backdrop-blur-md";
 
   const handleWishlistClick = async (event) => {
     event.preventDefault();
@@ -148,7 +148,16 @@ function ProductCard({ product }) {
             </span>
           )}
 
-          {/* Wishlist Button */}
+          {/* Discount Badge (Top Right) */}
+          {discountPercent > 0 && (
+            <span
+              className={`absolute left-2 bottom-2 z-10 rounded-full border px-2 py-0.5 text-[10px] font-black tracking-tight sm:right-3 sm:top-3 sm:text-[11px] ${discountBadge}`}
+            >
+              {discountPercent}% OFF
+            </span>
+          )}
+
+          {/* Wishlist Button (Bottom Right) */}
           <button
             type="button"
             onClick={handleWishlistClick}
@@ -159,7 +168,7 @@ function ProductCard({ product }) {
                 : "Add to wishlist"
             }
             aria-pressed={isWishlisted}
-            className={`absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full border shadow-sm transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-50 sm:right-3 sm:top-3 sm:h-8 sm:w-8 ${wishlistButton}`}
+            className={`absolute bottom-2 right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full border shadow-sm transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-50 sm:bottom-3 sm:right-3 sm:h-8 sm:w-8 ${wishlistButton}`}
           >
             <Heart
               size={15}
@@ -215,32 +224,21 @@ function ProductCard({ product }) {
             </h3>
           </div>
 
-          {/* Price & Discount */}
+          {/* Price */}
           <div
-            className={`flex items-center justify-between gap-1 border-t border-dashed pt-2 ${dividerColor}`}
+            className={`flex flex-wrap items-baseline gap-1.5 border-t border-dashed pt-2 ${dividerColor}`}
           >
-            <div className="flex flex-wrap items-baseline gap-[1px]">
-              <span
-                className={`text-sm font-extrabold tracking-tight sm:text-base ${priceColor}`}
-              >
-                {formatPrice.format(sellingPrice)}
-              </span>
+            <span
+              className={`text-sm font-extrabold tracking-tight sm:text-base ${priceColor}`}
+            >
+              {formatPrice.format(sellingPrice)}
+            </span>
 
-              {originalPrice > sellingPrice && (
-                <span
-                  className={`text-[10px] line-through sm:text-xs ${mutedText}`}
-                >
-                  {formatPrice.format(originalPrice)}
-                </span>
-              )}
-            </div>
-
-            {/* Discount Badge */}
-            {discountPercent > 0 && (
+            {originalPrice > sellingPrice && (
               <span
-                className={`rounded-md border px-1.5 py-0.5 text-[10px] font-black text-nowrap sm:text-[11px] ${discountBadge}`}
+                className={`text-[10px] line-through sm:text-xs ${mutedText}`}
               >
-                {discountPercent}% OFF
+                {formatPrice.format(originalPrice)}
               </span>
             )}
           </div>

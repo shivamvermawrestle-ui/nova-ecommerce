@@ -7,6 +7,7 @@ import Navbar from "./Components/Common/Navbar";
 import Footer from "./Components/Common/Footer";
 import ScrollToTop from "./Components/Common/ScrollToTop";
 
+
 // User Pages (Categorized)
 // Home
 const Home = lazy(() => import("./Pages/Home/Home"));
@@ -14,7 +15,8 @@ const Home = lazy(() => import("./Pages/Home/Home"));
 // Auth
 const Login = lazy(() => import("./Pages/Auth/Login"));
 const Signup = lazy(() => import("./Pages/Auth/Signup"));
-
+const ForgotPassword = lazy(() => import("./Pages/Auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("./Pages/Auth/ResetPassword"));
 // Product
 const Shop = lazy(() => import("./Pages/Product/Shop"));
 const ProductDetails = lazy(() => import("./Pages/Product/ProductDetails"));
@@ -68,12 +70,16 @@ const App = () => {
     <>
       <Suspense fallback={<PageLoader />}>
         <ScrollToTop />
+    
         <Routes>
           <Route element={<StoreLayout />}>
             {/*  user routes  */}
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+<Route path="/forget-password" element={<ForgotPassword />} />
+            <Route  path="/reset-password/:id/:token" element={<ResetPassword/>}/>
             <Route path="/shop" element={<Shop />} />
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/wishlist" element={<Wishlist />} />

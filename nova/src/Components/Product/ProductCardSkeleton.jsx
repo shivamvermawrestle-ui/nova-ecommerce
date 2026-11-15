@@ -34,9 +34,14 @@ const ProductCardSkeleton = () => {
           className={`absolute left-2 top-2 h-4 w-12 rounded-full border shadow-sm sm:left-3 sm:top-3 sm:h-5 sm:w-16 ${badgeStyle}`}
         />
 
-        {/* Top-right Heart Button Skeleton */}
+        {/* Top-right Discount Badge Skeleton */}
         <div
-          className={`absolute right-2 top-2 h-7 w-7 rounded-full border shadow-sm sm:right-3 sm:top-3 sm:h-8 sm:w-8 ${badgeStyle}`}
+          className={`absolute right-2 top-2 h-4 w-12 rounded-full border shadow-sm sm:right-3 sm:top-3 sm:h-5 sm:w-14 ${badgeStyle}`}
+        />
+
+        {/* Bottom-right Heart Button Skeleton */}
+        <div
+          className={`absolute right-2 bottom-2 h-7 w-7 rounded-full border shadow-sm sm:right-3 sm:bottom-3 sm:h-8 sm:w-8 ${badgeStyle}`}
         />
       </div>
 
@@ -57,16 +62,15 @@ const ProductCardSkeleton = () => {
 
         {/* Price Row Skeleton */}
         <div
-          className={`mt-2 flex items-center justify-between border-t border-dashed pt-2 ${
+          className={`mt-2 flex items-center gap-2 border-t border-dashed pt-2 ${
             dark ? "border-[#35435C]/60" : "border-[#D8E1EF]"
           }`}
         >
           <div
-            className={`h-4 w-16 rounded-full sm:h-5 sm:w-20 ${skeletonColor}`}
+            className={`h-4 w-20 rounded-full sm:h-5 sm:w-24 ${skeletonColor}`}
           />
-
           <div
-            className={`h-3 w-10 rounded-full sm:h-4 sm:w-12 ${skeletonColor}`}
+            className={`h-3 w-12 rounded-full sm:h-3.5 sm:w-14 ${skeletonColor}`}
           />
         </div>
       </div>

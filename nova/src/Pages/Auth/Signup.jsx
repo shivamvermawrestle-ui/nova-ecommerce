@@ -196,30 +196,27 @@ const Signup = () => {
                 {/* Profile picture  */}
                 <div className="flex flex-col items-center gap-2 ">
                   <div className="h-20 w-20 border-2 border-dashed border-gray-300 rounded-full overflow-hidden flex items-center justify-center bg-gray-50 relative">
-
-       {signupData.profilePic ? (
-                    <img
-                      src={signupData.profilePic}
-                      alt="preview"
-                      className="h-full w-full
+                    {signupData.profilePic ? (
+                      <img
+                        src={signupData.profilePic}
+                        alt="preview"
+                        className="h-full w-full
      object-cover"
-                    />
-                  ) : (
-                    <span className="text-xs text-gray-500 font-medium">
-                      Add Photo
-                    </span>
-                  )}
+                      />
+                    ) : (
+                      <span className="text-xs text-gray-500 font-medium">
+                        Add Photo
+                      </span>
+                    )}
                   </div>
-           
-             
-                  <input type="file"
-                  onChange={handleImageChange}
-                  accept="image/*"
-                  className="text-xs text-gray-600 file:mr-2 file:py-1 file:px-3 file:rounded-md file:bg-gray-200 cursor-pointer"
-                
+
+                  <input
+                    type="file"
+                    onChange={handleImageChange}
+                    accept="image/*"
+                    className="text-xs text-gray-600 file:mr-2 file:py-1 file:px-3 file:rounded-md file:bg-gray-200 cursor-pointer"
                   />
                 </div>
-
 
                 {/* Full Name Input */}
                 <div className="space-y-1.5">
@@ -277,7 +274,7 @@ const Signup = () => {
                   </div>
                 </div>
 
-                {/* Password Input */}
+ {/* Password Input */}
                 <div className="space-y-1.5">
                   <label
                     htmlFor="password"
@@ -319,6 +316,51 @@ const Signup = () => {
                     </button>
                   </div>
                 </div>
+                {/* Confirm-Password Input */}
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="password"
+                    className={`block text-xs font-semibold ${mainText}`}
+                  >
+                    Confirm Password
+                  </label>
+
+                  <div className="relative">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                      <Lock size={17} className={secondaryText} />
+                    </div>
+
+                    <input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      name="confirmPassword"
+                      value={signupData.confirmPassword}
+                      onChange={handleChange}
+                      autoComplete="new-password"
+                      placeholder="Re-enter password"
+                      required
+                      className={`w-full rounded-xl border py-2.5 pl-10 pr-10 text-sm shadow-sm outline-none transition-all ${inputStyle}`}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
+                      className={`absolute inset-y-0 right-0 flex items-center pr-3.5 transition-colors ${
+                        dark
+                          ? "text-[#8190AA] hover:text-[#EAF0FA]"
+                          : "text-[#8A96AA] hover:text-[#202C50]"
+                      }`}
+                    >
+                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                    </button>
+                  </div>
+                </div>
+               {passwordError && (
+                <p className="text-xs font-semibold text-red-500"></p>
+               )}
 
                 {/* Error Banner */}
                 {error && (

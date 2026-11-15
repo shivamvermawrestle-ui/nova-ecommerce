@@ -166,26 +166,32 @@ const Navbar = () => {
                       onClick={() =>
                         setUserDropdownOpen(!userDropdownOpen)
                       }
-                      className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-semibold transition-colors ${
+                      className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm font-semibold transition-colors ${
                         dark
                           ? "text-[#EAF0FA] hover:bg-[#202A40]"
                           : "text-[#202C50] hover:bg-[#F7F9FC]"
                       }`}
-                    >'
-                    {/* Desktop  user avatar  */}
-
-                    <div className="h-8 w-8 flex  items-center justify-center rounded-full border overflow-hidden bg-gray-200">
-                      {user.profilePic ? (
-                        <img src={user.profilePic} alt={user.name} className="h-full w-full object-cover" />
-                      ):user.name?(
-                        <span className="font-bold text-xs">{user.name.charAt(0).toUpperCase()}</span>
-                      ):(
-                        <User size={16}/>
-                      )}
-
-                    </div>
-
-                   
+                    >
+                      {/* Desktop user avatar */}
+                      <div className={`h-8 w-8 flex-shrink-0 flex items-center justify-center rounded-full border overflow-hidden ${
+                        dark
+                          ? "border-[#35435C] bg-[#171E30] text-[#EAF0FA]"
+                          : "border-[#D8E1EF] bg-gray-100 text-[#202C50]"
+                      }`}>
+                        {user.profilePic ? (
+                          <img
+                            src={user.profilePic}
+                            alt={user.name || "User"}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : user.name ? (
+                          <span className="text-xs font-bold">
+                            {user.name.charAt(0).toUpperCase()}
+                          </span>
+                        ) : (
+                          <User size={16} />
+                        )}
+                      </div>
 
                       <span className="max-w-28 truncate">
                         {user.name}
@@ -209,16 +215,39 @@ const Navbar = () => {
                         }`}
                       >
                         <div
-                          className={`border-b px-3 py-2 text-xs font-medium ${
+                          className={`border-b px-3 py-2.5 text-xs font-medium ${
                             dark
                               ? "border-[#35435C] text-[#AAB8D0]"
                               : "border-[#D8E1EF] text-[#64718A]"
                           }`}
                         >
-                          Signed in as{" "}
-                          <span className={`font-semibold ${mainText}`}>
-                            {user.email || user.name}
-                          </span>
+                          <div className="flex items-center gap-2.5">
+                            <div className={`h-8 w-8 flex-shrink-0 flex items-center justify-center rounded-full border overflow-hidden ${
+                              dark
+                                ? "border-[#35435C] bg-[#171E30] text-[#EAF0FA]"
+                                : "border-[#D8E1EF] bg-gray-100 text-[#202C50]"
+                            }`}>
+                              {user.profilePic ? (
+                                <img
+                                  src={user.profilePic}
+                                  alt={user.name || "User"}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : user.name ? (
+                                <span className="text-xs font-bold">
+                                  {user.name.charAt(0).toUpperCase()}
+                                </span>
+                              ) : (
+                                <User size={14} />
+                              )}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-[11px] opacity-75">Signed in as</p>
+                              <p className={`truncate font-semibold ${mainText}`}>
+                                {user.name || user.email}
+                              </p>
+                            </div>
+                          </div>
                         </div>
 
                         {user.role === "ADMIN" && (
@@ -245,28 +274,7 @@ const Navbar = () => {
                           <span>My Orders</span>
                         </Link>
 
-                        <Link
-                          to="/wishlist"
-                          onClick={closeMenu}
-                          className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors ${hoverBg} ${mainText}`}
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <Heart size={16} className={mutedText} />
-                            <span>Wishlist</span>
-                          </div>
-
-                          {wishlistCount > 0 && (
-                            <span
-                              className={`rounded-full px-2 py-0.5 text-xs font-bold ${
-                                dark
-                                  ? "bg-[#34415B] text-[#7895C5]"
-                                  : "bg-[#DFE7F3] text-[#344F82]"
-                              }`}
-                            >
-                              {wishlistCount}
-                            </span>
-                          )}
-                        </Link>
+                       
 
                         <div
                           className={`my-1 h-px ${
@@ -279,7 +287,7 @@ const Navbar = () => {
                           type="button"
                           onClick={handleLogout}
                           disabled={isLogginOut}
-                          className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${logoutButton}`}
+                          className={`flex w-full items-center  gap-2.5 rounded-lg px-3 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${logoutButton}`}
                         >
                           <LogOut size={16} />
                           <span>
@@ -372,7 +380,7 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Controls */}
-            <div className="flex items-center gap-2 lg:hidden">
+            <div className="flex items-center gap-1.5 lg:hidden">
               <button
                 type="button"
                 onClick={() => setDark(!dark)}
@@ -406,6 +414,38 @@ const Navbar = () => {
                   </span>
                 )}
               </Link>
+
+              {/* Mobile Profile Pic button */}
+              {user && (
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen(!menuOpen)}
+                  aria-label="Toggle user menu"
+                  className="rounded-full p-0.5 transition-transform active:scale-95"
+                >
+                  <div
+                    className={`h-8 w-8 flex-shrink-0 flex items-center justify-center rounded-full border overflow-hidden ${
+                      dark
+                        ? "border-[#35435C] bg-[#171E30] text-[#EAF0FA]"
+                        : "border-[#D8E1EF] bg-gray-100 text-[#202C50]"
+                    }`}
+                  >
+                    {user.profilePic ? (
+                      <img
+                        src={user.profilePic}
+                        alt={user.name || "User"}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : user.name ? (
+                      <span className="text-xs font-bold">
+                        {user.name.charAt(0).toUpperCase()}
+                      </span>
+                    ) : (
+                      <User size={16} />
+                    )}
+                  </div>
+                </button>
+              )}
 
               <button
                 type="button"
@@ -444,28 +484,56 @@ const Navbar = () => {
                 </p>
               ) : user ? (
                 <div
-                  className={`border-b pb-3 ${
+                  className={`flex items-center gap-3 border-b pb-3 ${
                     dark ? "border-[#35435C]" : "border-[#D8E1EF]"
                   }`}
                 >
-                  <p className={`text-xs ${mutedText}`}>
-                    Signed in as
-                  </p>
+                  {/* Mobile Drawer Profile Avatar */}
+                  <div
+                    className={`h-11 w-11 flex-shrink-0 flex items-center justify-center rounded-full border overflow-hidden ${
+                      dark
+                        ? "border-[#35435C] bg-[#171E30] text-[#EAF0FA]"
+                        : "border-[#D8E1EF] bg-gray-100 text-[#202C50]"
+                    }`}
+                  >
+                    {user.profilePic ? (
+                      <img
+                        src={user.profilePic}
+                        alt={user.name || "User"}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : user.name ? (
+                      <span className="text-base font-bold">
+                        {user.name.charAt(0).toUpperCase()}
+                      </span>
+                    ) : (
+                      <User size={20} />
+                    )}
+                  </div>
 
-                  <p className="truncate text-sm font-bold">
-                    {user.name} ({user.email})
-                  </p>
-
-                  {user.role === "ADMIN" && (
-                    <Link
-                      to="/dashboard"
-                      onClick={closeMenu}
-                      className={`mt-2 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${adminButton}`}
-                    >
-                      <ShieldCheck size={14} />
-                      <span>Admin Dashboard</span>
-                    </Link>
-                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className={`text-xs ${mutedText}`}>
+                      Signed in as
+                    </p>
+                    <p className="truncate text-sm font-bold">
+                      {user.name}
+                    </p>
+                    {user.email && (
+                      <p className={`truncate text-xs ${mutedText}`}>
+                        {user.email}
+                      </p>
+                    )}
+                    {user.role === "ADMIN" && (
+                      <Link
+                        to="/dashboard"
+                        onClick={closeMenu}
+                        className={`mt-1.5 inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors ${adminButton}`}
+                      >
+                        <ShieldCheck size={13} />
+                        <span>Admin Dashboard</span>
+                      </Link>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <Link
