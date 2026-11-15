@@ -4,7 +4,6 @@ export { default as Signup } from './Auth/Signup';
 
 // Home / General Pages
 export { default as Home } from './Home/Home';
-export { default as OurStory } from './Home/OurStory';
 
 // Product Pages
 export { default as Shop } from './Product/Shop';

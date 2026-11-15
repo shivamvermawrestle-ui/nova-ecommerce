@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
-import { store } from "./app/store.js";
+import { store } from "./App/store.js";
 import { GlobalContextProvider } from "./Context/GlobalContext.jsx";
 import ErrorBoundary from "./Components/Common/ErrorBoundary.jsx";
 
