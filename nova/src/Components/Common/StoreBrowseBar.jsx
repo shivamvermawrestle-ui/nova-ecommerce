@@ -1,3 +1,4 @@
+
 import { Link, useSearchParams } from "react-router-dom";
 import { useGetCategoriesQuery } from "../../services/productsApi";
 import { UseGlob } from "../../Context/GlobalContext";
@@ -7,6 +8,7 @@ const StoreBrowseBar = () => {
   const [searchParams] = useSearchParams();
 
   const { data: categoryItems = [] } = useGetCategoriesQuery();
+
   const categories = [
     ...new Map(
       categoryItems
@@ -14,55 +16,62 @@ const StoreBrowseBar = () => {
         .map((item) => [item.category, item])
     ).values(),
   ];
+
   const activeCategory = searchParams.get("category") || "";
+
+  const activeText = dark
+    ? "text-[#7895C5] font-bold"
+    : "text-[#202C50] font-bold";
+
+  const inactiveText = dark
+    ? "text-[#AAB8D0] hover:text-[#EAF0FA] font-medium"
+    : "text-[#64718A] hover:text-[#202C50] font-medium";
+
+  const activeIcon = dark
+    ? "border-[#7895C5] bg-[#202A40] text-[#7895C5]"
+    : "border-[#344F82] bg-[#DFE7F3] text-[#202C50]";
+
+  const inactiveIcon = dark
+    ? "border-[#35435C] bg-[#202A40] text-[#EAF0FA] group-hover:border-[#7895C5]/50"
+    : "border-[#D8E1EF] bg-[#F7F9FC] text-[#202C50] group-hover:border-[#344F82]/50";
+
+  const underlineColor = dark ? "bg-[#7895C5]" : "bg-[#344F82]";
 
   return (
     <div
       className={`border-b transition-colors duration-200 ${
-        dark ? "border-[#35435C] bg-[#171E30]" : "border-[#D8E1EF] bg-[#FFFFFF]"
+        dark
+          ? "border-[#35435C] bg-[#171E30]"
+          : "border-[#D8E1EF] bg-[#FFFFFF]"
       }`}
     >
       <div className="mx-auto max-w-7xl px-3 sm:px-6">
-        <nav className="flex gap-2 sm:gap-4 overflow-x-auto no-scrollbar items-center py-2.5">
-          {/* "All" Category Option */}
+        <nav className="flex items-center gap-2 overflow-x-auto py-2.5 no-scrollbar sm:gap-4">
+          {/* All Category Option */}
           <Link
             to="/shop"
             className={`group relative flex shrink-0 flex-col items-center px-2.5 py-1 transition-colors duration-150 ${
-              !activeCategory
-                ? dark
-                  ? "text-[#7895C5] font-bold"
-                  : "text-[#202C50] font-bold"
-                : dark
-                ? "text-[#AAB8D0] hover:text-[#EAF0FA] font-medium"
-                : "text-[#64718A] hover:text-[#202C50] font-medium"
+              !activeCategory ? activeText : inactiveText
             }`}
           >
             {/* Category Icon Container */}
             <div
-              className={`h-11 w-11 rounded-xl flex items-center justify-center mb-1.5 border shadow-2xs transition-colors ${
-                !activeCategory
-                  ? dark
-                    ? "border-[#7895C5] bg-[#202A40] text-[#7895C5]"
-                    : "border-[#202C50] bg-[#DFE7F3] text-[#202C50]"
-                  : dark
-                  ? "border-[#35435C] bg-[#202A40] text-[#EAF0FA] group-hover:border-[#7895C5]/50"
-                  : "border-[#D8E1EF] bg-[#F7F9FC] text-[#202C50] group-hover:border-[#202C50]/50"
+              className={`mb-1.5 flex h-11 w-11 items-center justify-center rounded-xl border shadow-2xs transition-colors ${
+                !activeCategory ? activeIcon : inactiveIcon
               }`}
             >
               <span className="text-xs font-bold">All</span>
             </div>
 
             {/* Category Label */}
-            <span className="text-xs tracking-tight text-center max-w-[85px] truncate">
+            <span className="max-w-[85px] truncate text-center text-xs tracking-tight">
               All Products
             </span>
 
             {/* Active Underline Indicator */}
             {!activeCategory && (
               <span
-                className={`absolute bottom-0 left-2 right-2 h-0.5 rounded-full ${
-                  dark ? "bg-[#7895C5]" : "bg-[#202C50]"
-                }`}
+                className={`absolute bottom-0 left-2 right-2 h-0.5 rounded-full ${underlineColor}`}
               />
             )}
           </Link>
@@ -70,30 +79,19 @@ const StoreBrowseBar = () => {
           {/* Dynamic Categories */}
           {categories.map((item) => {
             const isActive = activeCategory === item.category;
+
             return (
               <Link
                 key={item.category}
                 to={`/shop?category=${encodeURIComponent(item.category)}`}
                 className={`group relative flex shrink-0 flex-col items-center px-2.5 py-1 transition-colors duration-150 ${
-                  isActive
-                    ? dark
-                      ? "text-[#7895C5] font-bold"
-                      : "text-[#202C50] font-bold"
-                    : dark
-                    ? "text-[#AAB8D0] hover:text-[#EAF0FA] font-medium"
-                    : "text-[#64718A] hover:text-[#202C50] font-medium"
+                  isActive ? activeText : inactiveText
                 }`}
               >
                 {/* Category Icon / Image Container */}
                 <div
-                  className={`h-11 w-11 rounded-xl  overflow-hidden flex items-center justify-center mb-1.5  border shadow-2xs transition-colors ${
-                    isActive
-                      ? dark
-                        ? "border-[#7895C5] bg-[#202A40]"
-                        : "border-[#202C50] bg-[#DFE7F3]"
-                      : dark
-                      ? "border-[#35435C] bg-[#202A40] group-hover:border-[#7895C5]/50"
-                      : "border-[#D8E1EF] bg-[#F7F9FC] group-hover:border-[#202C50]/50"
+                  className={`mb-1.5 flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border shadow-2xs transition-colors ${
+                    isActive ? activeIcon : inactiveIcon
                   }`}
                 >
                   {item.productImage?.[0] ? (
@@ -101,7 +99,7 @@ const StoreBrowseBar = () => {
                       src={item.productImage[0]}
                       alt={item.category}
                       loading="lazy"
-                      className="h-full w-full object-cover "
+                      className="h-full w-full object-cover"
                     />
                   ) : (
                     <span className="text-sm font-bold">
@@ -111,16 +109,14 @@ const StoreBrowseBar = () => {
                 </div>
 
                 {/* Category Label */}
-                <span className="text-xs tracking-tight text-center max-w-[85px] truncate">
+                <span className="max-w-[85px] truncate text-center text-xs tracking-tight">
                   {item.category}
                 </span>
 
                 {/* Active Underline Indicator */}
                 {isActive && (
                   <span
-                    className={`absolute bottom-0 left-2 right-2 h-0.5 rounded-full ${
-                      dark ? "bg-[#7895C5]" : "bg-[#202C50]"
-                    }`}
+                    className={`absolute bottom-0 left-2 right-2 h-0.5 rounded-full ${underlineColor}`}
                   />
                 )}
               </Link>

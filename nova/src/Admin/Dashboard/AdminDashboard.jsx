@@ -8,18 +8,13 @@ import {
 } from "../../services/productsApi";
 
 import {
-  TrendingUp,
   ShoppingBag,
   Package,
   Users,
   AlertTriangle,
   ArrowRight,
-  Plus,
   Coins,
-  Clock,
   CheckCircle2,
-  Truck,
-  RotateCcw,
 } from "lucide-react";
 
 const AdminDashboard = () => {
@@ -41,26 +36,46 @@ const AdminDashboard = () => {
   const isLoading = isLoadingOrders || isLoadingProducts || isLoadingUsers;
 
   // Loading Skeleton State
-  if (isLoading && orders.length === 0) {
-    return (
-      <main className="flex flex-col gap-6 p-4 sm:p-6 animate-pulse">
-        <div className="h-4 w-28 rounded bg-[#DFE7F3] dark:bg-[#26334D]" />
 
-        <div className="h-8 w-44 rounded bg-[#DFE7F3] dark:bg-[#26334D]" />
+// Loading Skeleton State
+if (isLoading && orders.length === 0) {
+  return (
+    <main
+      className={`flex flex-col gap-6 p-4 sm:p-6 animate-pulse ${
+        dark ? "bg-[#171E30]" : "bg-[#F7F9FC]"
+      }`}
+    >
+      <div
+        className={`h-4 w-28 rounded ${
+          dark ? "bg-[#26334D]" : "bg-[#DFE7F3]"
+        }`}
+      />
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-28 rounded-2xl bg-[#DFE7F3] dark:bg-[#26334D]"
-            />
-          ))}
-        </div>
+      <div
+        className={`h-8 w-44 rounded ${
+          dark ? "bg-[#26334D]" : "bg-[#DFE7F3]"
+        }`}
+      />
 
-        <div className="h-64 rounded-2xl bg-[#DFE7F3] dark:bg-[#26334D] mt-4" />
-      </main>
-    );
-  }
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className={`h-28 rounded-2xl ${
+              dark ? "bg-[#26334D]" : "bg-[#DFE7F3]"
+            }`}
+          />
+        ))}
+      </div>
+
+      <div
+        className={`h-64 rounded-2xl mt-4 ${
+          dark ? "bg-[#26334D]" : "bg-[#DFE7F3]"
+        }`}
+      />
+    </main>
+  );
+}
 
   // Error State
   if (isError) {

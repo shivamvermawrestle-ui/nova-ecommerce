@@ -1,10 +1,13 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+
 import {
   useDeleteProductMutation,
   useGetProductsQuery,
 } from "../../services/productsApi";
+
 import { UseGlob } from "../../Context/GlobalContext";
+
 import {
   Plus,
   Search,
@@ -16,11 +19,12 @@ import {
   Sparkles,
   X,
   ArrowUpDown,
-  Tag,
+
 } from "lucide-react";
 
 const AdminProducts = () => {
   const { formatPrice, dark } = UseGlob();
+
   const {
     data: products = [],
     isLoading,
@@ -28,8 +32,9 @@ const AdminProducts = () => {
     error,
   } = useGetProductsQuery();
 
-  const [deleteProduct, { isLoading: isDeletingGlobal, error: deleteError }] =
+  const [deleteProduct, { error: deleteError }] =
     useDeleteProductMutation();
+
   const [deletingId, setDeletingId] = useState(null);
 
   const [search, setSearch] = useState("");
@@ -37,14 +42,18 @@ const AdminProducts = () => {
   const [stockFilter, setStockFilter] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [currentPage, setCurrentPage] = useState(1);
+
   const itemsPerPage = 10;
 
   const handleDelete = async (product) => {
     const confirmed = window.confirm(
       `Delete "${product.productName}"? This action cannot be undone.`
     );
+
     if (!confirmed) return;
+
     setDeletingId(product._id);
+
     try {
       await deleteProduct(product._id).unwrap();
     } catch (err) {
@@ -57,20 +66,32 @@ const AdminProducts = () => {
   // Extract unique sorted categories
   const categories = useMemo(() => {
     return [
-      ...new Set(products.map((product) => product.category).filter(Boolean)),
+      ...new Set(
+        products.map((product) => product.category).filter(Boolean)
+      ),
     ].sort((a, b) => a.localeCompare(b));
   }, [products]);
 
   // Statistics calculation for KPI badges
   const stats = useMemo(() => {
-    const inStock = products.filter((p) => Number(p.stock ?? 0) > 5).length;
+    const inStock = products.filter(
+      (p) => Number(p.stock ?? 0) > 5
+    ).length;
+
     const lowStock = products.filter((p) => {
       const s = Number(p.stock ?? 0);
       return s > 0 && s <= 5;
     }).length;
-    const outOfStock = products.filter((p) => Number(p.stock ?? 0) === 0).length;
+
+    const outOfStock = products.filter(
+      (p) => Number(p.stock ?? 0) === 0
+    ).length;
+
     const totalInventoryValue = products.reduce((acc, p) => {
-      return acc + (Number(p.sellingPrice) || 0) * (Number(p.stock) || 0);
+      return (
+        acc +
+        (Number(p.sellingPrice) || 0) * (Number(p.stock) || 0)
+      );
     }, 0);
 
     return {
@@ -105,8 +126,12 @@ const AdminProducts = () => {
         .join(" ")
         .toLowerCase();
 
-      const matchesSearch = !normalizedSearch || searchableText.includes(normalizedSearch);
-      const matchesCategory = !selectedCategory || product.category === selectedCategory;
+      const matchesSearch =
+        !normalizedSearch || searchableText.includes(normalizedSearch);
+
+      const matchesCategory =
+        !selectedCategory || product.category === selectedCategory;
+
       const stock = Number(product.stock ?? 0);
 
       const matchesStock =
@@ -122,36 +147,62 @@ const AdminProducts = () => {
       if (sortBy === "newest") {
         return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
       }
+
       if (sortBy === "price_asc") {
-        return (Number(a.sellingPrice) || 0) - (Number(b.sellingPrice) || 0);
+        return (
+          (Number(a.sellingPrice) || 0) -
+          (Number(b.sellingPrice) || 0)
+        );
       }
+
       if (sortBy === "price_desc") {
-        return (Number(b.sellingPrice) || 0) - (Number(a.sellingPrice) || 0);
+        return (
+          (Number(b.sellingPrice) || 0) -
+          (Number(a.sellingPrice) || 0)
+        );
       }
+
       if (sortBy === "stock_desc") {
         return (Number(b.stock) || 0) - (Number(a.stock) || 0);
       }
+
       if (sortBy === "name_asc") {
         return (a.productName || "").localeCompare(b.productName || "");
       }
+
       return 0;
     });
   }, [products, search, selectedCategory, stockFilter, sortBy]);
 
   // Pagination slice
-  const totalPages = Math.ceil(filteredAndSortedProducts.length / itemsPerPage) || 1;
+  const totalPages =
+    Math.ceil(filteredAndSortedProducts.length / itemsPerPage) || 1;
+
   const paginatedProducts = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
-    return filteredAndSortedProducts.slice(start, start + itemsPerPage);
+
+    return filteredAndSortedProducts.slice(
+      start,
+      start + itemsPerPage
+    );
   }, [filteredAndSortedProducts, currentPage]);
 
-  const hasActiveFilters = search || selectedCategory || stockFilter !== "all" || sortBy !== "newest";
+  const hasActiveFilters =
+    search ||
+    selectedCategory ||
+    stockFilter !== "all" ||
+    sortBy !== "newest";
 
   if (isLoading) {
     return (
       <div className="p-8 max-w-7xl mx-auto flex flex-col items-center justify-center min-h-[400px] gap-3">
         <div className="h-10 w-10 border-4 border-[#D8E1EF] border-t-[#202C50] dark:border-[#35435C] dark:border-t-[#7895C5] rounded-full animate-spin" />
-        <p className={`text-sm font-medium ${dark ? "text-[#8190AA]" : "text-[#64718A]"}`}>
+
+        <p
+          className={`text-sm font-medium ${
+            dark ? "text-[#8190AA]" : "text-[#64718A]"
+          }`}
+        >
           Loading product catalog...
         </p>
       </div>
@@ -169,9 +220,18 @@ const AdminProducts = () => {
           }`}
         >
           <AlertCircle className="w-10 h-10 text-[#C04452] dark:text-[#F08089]" />
-          <h2 className="text-xl font-bold">Could not load products</h2>
-          <p className={`text-sm ${dark ? "text-[#8190AA]" : "text-[#64718A]"}`}>
-            {error?.data?.message || "An error occurred while fetching the catalog."}
+
+          <h2 className="text-xl font-bold">
+            Could not load products
+          </h2>
+
+          <p
+            className={`text-sm ${
+              dark ? "text-[#8190AA]" : "text-[#64718A]"
+            }`}
+          >
+            {error?.data?.message ||
+              "An error occurred while fetching the catalog."}
           </p>
         </div>
       </div>
@@ -191,6 +251,7 @@ const AdminProducts = () => {
             >
               Product Catalog
             </h1>
+
             <span
               className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                 dark
@@ -201,12 +262,14 @@ const AdminProducts = () => {
               {products.length}
             </span>
           </div>
+
           <p
             className={`text-xs sm:text-sm mt-0.5 ${
               dark ? "text-[#8190AA]" : "text-[#64718A]"
             }`}
           >
-            Manage inventory levels, prices, categories, and storefront visibility.
+            Manage inventory levels, prices, categories, and storefront
+            visibility.
           </p>
         </div>
 
@@ -225,6 +288,7 @@ const AdminProducts = () => {
             >
               Total Inventory Value
             </p>
+
             <p
               className={`text-base font-bold ${
                 dark ? "text-[#7895C5]" : "text-[#202C50]"
@@ -245,14 +309,19 @@ const AdminProducts = () => {
       </div>
 
       {/* Quick Status Filter Tabs */}
-      <div className="grid grid-cols-2  md:grid-cols-4  gap-2 overflow-x-auto pb-1 scrollbar-none">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 overflow-x-auto pb-1 scrollbar-none">
         {[
           { id: "all", label: "All Items", count: stats.total },
           { id: "in-stock", label: "In Stock (>5)", count: stats.inStock },
           { id: "low-stock", label: "Low Stock (1–5)", count: stats.lowStock },
-          { id: "out-of-stock", label: "Out of Stock (0)", count: stats.outOfStock },
+          {
+            id: "out-of-stock",
+            label: "Out of Stock (0)",
+            count: stats.outOfStock,
+          },
         ].map((tab) => {
           const isActive = stockFilter === tab.id;
+
           return (
             <button
               key={tab.id}
@@ -267,11 +336,12 @@ const AdminProducts = () => {
                     ? "bg-[#7895C5] text-[#171E30] border-[#7895C5] shadow-xs"
                     : "bg-[#202C50] text-white border-[#202C50] shadow-xs"
                   : dark
-                  ? "bg-[#202A40] text-[#AAB8D0] border-[#35435C] hover:bg-[#2D3B56] hover:text-[#EAF0FA]"
-                  : "bg-white text-[#64718A] border-[#D8E1EF] hover:bg-[#EDF2F9] hover:text-[#202C50]"
+                    ? "bg-[#202A40] text-[#AAB8D0] border-[#35435C] hover:bg-[#2D3B56] hover:text-[#EAF0FA]"
+                    : "bg-white text-[#64718A] border-[#D8E1EF] hover:bg-[#EDF2F9] hover:text-[#202C50]"
               }`}
             >
               <span>{tab.label}</span>
+
               <span
                 className={`rounded-md px-1.5 py-0.2 text-[10px] font-bold ${
                   isActive
@@ -279,8 +349,8 @@ const AdminProducts = () => {
                       ? "bg-[#171E30] text-[#7895C5]"
                       : "bg-white text-[#202C50]"
                     : dark
-                    ? "bg-[#171E30] text-[#8190AA]"
-                    : "bg-[#DFE7F3] text-[#64718A]"
+                      ? "bg-[#171E30] text-[#8190AA]"
+                      : "bg-[#DFE7F3] text-[#64718A]"
                 }`}
               >
                 {tab.count}
@@ -292,19 +362,20 @@ const AdminProducts = () => {
 
       {/* Filter and Search Bar Controls */}
       <div
-        className={`rounded-2xl border p-4 shadow-sm transition-colors flex flex-col md:flex-row   items-stretch md:items-center gap-3 ${
+        className={`rounded-2xl border p-4 shadow-sm transition-colors flex flex-col md:flex-row items-stretch md:items-center gap-3 ${
           dark
             ? "border-[#35435C] bg-[#202A40]"
             : "border-[#D8E1EF] bg-white"
         }`}
       >
         {/* Search input with icon */}
-        <div className="relative  w-full flex-1">
+        <div className="relative w-full flex-1">
           <Search
-            className={`absolute  left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 ${
+            className={`absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 ${
               dark ? "text-[#8190AA]" : "text-[#8A96AA]"
             }`}
           />
+
           <input
             value={search}
             onChange={(e) => {
@@ -318,6 +389,7 @@ const AdminProducts = () => {
                 : "bg-[#F7F9FC] border-[#C9D5E7] text-[#202C50] placeholder-[#8A96AA] focus:border-[#7895C5]"
             }`}
           />
+
           {search && (
             <button
               type="button"
@@ -333,7 +405,7 @@ const AdminProducts = () => {
         </div>
 
         {/* Dropdowns row */}
-        <div className="flex   items-center gap-2.5">
+        <div className="flex items-center gap-2.5">
           {/* Category Dropdown */}
           <select
             value={selectedCategory}
@@ -341,13 +413,14 @@ const AdminProducts = () => {
               setSelectedCategory(e.target.value);
               setCurrentPage(1);
             }}
-            className={`rounded-xl border  w-full px-3 py-2 text-xs font-medium outline-none transition-colors shadow-2xs ${
+            className={`rounded-xl border w-full px-3 py-2 text-xs font-medium outline-none transition-colors shadow-2xs ${
               dark
                 ? "bg-[#171E30] border-[#465570] text-[#EAF0FA] focus:border-[#9BB2D8]"
                 : "bg-[#F7F9FC] border-[#C9D5E7] text-[#202C50] focus:border-[#7895C5]"
             }`}
           >
             <option value="">All Categories</option>
+
             {categories.map((category) => (
               <option value={category} key={category}>
                 {category}
@@ -362,10 +435,11 @@ const AdminProducts = () => {
                 dark ? "text-[#8190AA]" : "text-[#8A96AA]"
               }`}
             />
+
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className={`rounded-xl border w-full  px-3 py-2 text-xs font-medium outline-none transition-colors shadow-2xs ${
+              className={`rounded-xl border w-full px-3 py-2 text-xs font-medium outline-none transition-colors shadow-2xs ${
                 dark
                   ? "bg-[#171E30] border-[#465570] text-[#EAF0FA] focus:border-[#9BB2D8]"
                   : "bg-[#F7F9FC] border-[#C9D5E7] text-[#202C50] focus:border-[#7895C5]"
@@ -400,7 +474,9 @@ const AdminProducts = () => {
       {deleteError && (
         <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3.5 text-xs sm:text-sm font-semibold text-[#C04452] dark:text-[#F08089] flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{deleteError.data?.message || "Could not delete product."}</span>
+          <span>
+            {deleteError.data?.message || "Could not delete product."}
+          </span>
         </div>
       )}
 
@@ -414,12 +490,17 @@ const AdminProducts = () => {
           }`}
         >
           <Package className="w-10 h-10 text-[#8A96AA] dark:text-[#8190AA]" />
-          <h3 className="text-base font-bold">No products found</h3>
+
+          <h3 className="text-base font-bold">
+            No products found
+          </h3>
+
           <p className="text-xs max-w-sm">
             {hasActiveFilters
               ? "No products match your current filter and search criteria. Try adjusting or clearing your filters."
               : "Your catalog is empty. Click below to add your first product."}
           </p>
+
           {hasActiveFilters ? (
             <button
               type="button"
@@ -440,7 +521,9 @@ const AdminProducts = () => {
       ) : (
         <div
           className={`overflow-hidden rounded-2xl border shadow-sm transition-colors ${
-            dark ? "border-[#35435C] bg-[#202A40]" : "border-[#D8E1EF] bg-white"
+            dark
+              ? "border-[#35435C] bg-[#202A40]"
+              : "border-[#D8E1EF] bg-white"
           }`}
         >
           <div className="overflow-x-auto">
@@ -461,6 +544,7 @@ const AdminProducts = () => {
                   <th className="px-4 py-3.5 text-center">Actions</th>
                 </tr>
               </thead>
+
               <tbody
                 className={`divide-y text-xs sm:text-sm ${
                   dark ? "divide-[#35435C]/60" : "divide-[#D8E1EF]"
@@ -469,10 +553,18 @@ const AdminProducts = () => {
                 {paginatedProducts.map((product) => {
                   const origPrice = Number(product.price || 0);
                   const sellPrice = Number(product.sellingPrice || 0);
-                  const hasDiscount = origPrice > 0 && sellPrice > 0 && sellPrice < origPrice;
+
+                  const hasDiscount =
+                    origPrice > 0 &&
+                    sellPrice > 0 &&
+                    sellPrice < origPrice;
+
                   const discountPercent = hasDiscount
-                    ? Math.round(((origPrice - sellPrice) / origPrice) * 100)
+                    ? Math.round(
+                        ((origPrice - sellPrice) / origPrice) * 100
+                      )
                     : 0;
+
                   const stock = Number(product.stock ?? 0);
                   const isDeleting = deletingId === product._id;
 
@@ -480,7 +572,9 @@ const AdminProducts = () => {
                     <tr
                       key={product._id}
                       className={`transition-colors ${
-                        dark ? "hover:bg-[#2D3B56]" : "hover:bg-[#EDF2F9]"
+                        dark
+                          ? "hover:bg-[#2D3B56]"
+                          : "hover:bg-[#EDF2F9]"
                       }`}
                     >
                       {/* Product Thumbnail & Details */}
@@ -513,12 +607,15 @@ const AdminProducts = () => {
                               <Link
                                 to={`/dashboard/products/${product._id}/edit`}
                                 className={`font-semibold line-clamp-1 hover:underline ${
-                                  dark ? "text-[#EAF0FA]" : "text-[#202C50]"
+                                  dark
+                                    ? "text-[#EAF0FA]"
+                                    : "text-[#202C50]"
                                 }`}
                                 title={product.productName}
                               >
                                 {product.productName}
                               </Link>
+
                               {product.isFeatured && (
                                 <span className="inline-flex items-center gap-0.5 rounded-md bg-[#DFE7F3] dark:bg-[#34415B] px-1.5 py-0.2 text-[9px] font-bold text-[#202C50] dark:text-[#7895C5]">
                                   <Sparkles className="w-2.5 h-2.5 text-[#E6B66F]" />
@@ -526,13 +623,20 @@ const AdminProducts = () => {
                                 </span>
                               )}
                             </div>
+
                             <div
                               className={`flex items-center gap-2 text-xs mt-0.5 ${
-                                dark ? "text-[#8190AA]" : "text-[#64718A]"
+                                dark
+                                  ? "text-[#8190AA]"
+                                  : "text-[#64718A]"
                               }`}
                             >
-                              <span>{product.brandName || "Generic"}</span>
+                              <span>
+                                {product.brandName || "Generic"}
+                              </span>
+
                               <span>·</span>
+
                               <span className="font-mono text-[11px] opacity-75">
                                 #{product._id.slice(-6)}
                               </span>
@@ -544,7 +648,9 @@ const AdminProducts = () => {
                       {/* Category */}
                       <td
                         className={`px-3 py-3 text-left whitespace-nowrap ${
-                          dark ? "text-[#EAF0FA]" : "text-[#202C50]"
+                          dark
+                            ? "text-[#EAF0FA]"
+                            : "text-[#202C50]"
                         }`}
                       >
                         <span
@@ -561,11 +667,17 @@ const AdminProducts = () => {
                       {/* Original Price */}
                       <td
                         className={`px-3 py-3 text-center whitespace-nowrap ${
-                          dark ? "text-[#8190AA]" : "text-[#64718A]"
+                          dark
+                            ? "text-[#8190AA]"
+                            : "text-[#64718A]"
                         }`}
                       >
                         {origPrice > 0 ? (
-                          <span className={hasDiscount ? "line-through opacity-75" : ""}>
+                          <span
+                            className={
+                              hasDiscount ? "line-through opacity-75" : ""
+                            }
+                          >
                             {formatPrice.format(origPrice)}
                           </span>
                         ) : (
@@ -573,87 +685,119 @@ const AdminProducts = () => {
                         )}
                       </td>
 
-                      {/* Selling Price */}
-                      <td className="px-3 py-3 text-center whitespace-nowrap">
-                        <div className="flex flex-col items-center">
-                          <span
-                            className={`font-bold ${
-                              dark ? "text-[#7895C5]" : "text-[#202C50]"
-                            }`}
-                          >
-                            {formatPrice.format(sellPrice)}
-                          </span>
-                          {hasDiscount && (
-                            <span className="rounded-md bg-red-100 dark:bg-red-950/40 text-[#B74747] dark:text-[#F08080] px-1.5 py-0.2 text-[10px] font-bold mt-0.5">
-                              -{discountPercent}%
-                            </span>
-                          )}
-                        </div>
-                      </td>
+                 {/* Selling Price */}
+<td className="px-3 py-3 text-center whitespace-nowrap">
+  <div className="flex flex-col items-center">
+    <span
+      className={`font-bold ${
+        dark ? "text-[#7895C5]" : "text-[#202C50]"
+      }`}
+    >
+      {formatPrice.format(sellPrice)}
+    </span>
 
-                      {/* Stock Status Badge */}
-                      <td className="px-3 py-3 text-center whitespace-nowrap">
-                        {stock === 0 ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-[#C04452] dark:bg-red-950/40 dark:text-[#F08089]">
-                            <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
-                            <span>Out of stock</span>
-                          </span>
-                        ) : stock <= 5 ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-[#A66A22] dark:bg-amber-950/40 dark:text-[#E6B66F]">
-                            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                            <span>Low stock ({stock})</span>
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-[#27845B] dark:bg-emerald-950/40 dark:text-[#65C995]">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                            <span>{stock} in stock</span>
-                          </span>
-                        )}
-                      </td>
+    {hasDiscount && (
+      <span
+        className={`rounded-md px-1.5 py-0.5 text-[10px] font-bold mt-0.5 ${
+          dark
+            ? "bg-[#49313B] text-[#F08089]"
+            : "bg-[#FCE8E9] text-[#B74747]"
+        }`}
+      >
+        -{discountPercent}%
+      </span>
+    )}
+  </div>
+</td>
 
-                      {/* Actions */}
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <div className="flex items-center justify-center gap-2">
-                          <Link
-                            to={`/product/${product._id}`}
-                            className={`rounded-lg p-1.5 text-xs font-semibold transition-colors border ${
-                              dark
-                                ? "border-[#465570] bg-[#171E30] text-[#AAB8D0] hover:text-[#EAF0FA] hover:bg-[#2D3B56]"
-                                : "border-[#C9D5E7] bg-white text-[#64718A] hover:text-[#202C50] hover:bg-[#EDF2F9]"
-                            }`}
-                            title="View in storefront"
-                          >
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </Link>
+                 {/* Stock Status Badge */}
+<td className="px-3 py-3 text-center whitespace-nowrap">
+  {stock === 0 ? (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
+        dark
+          ? "bg-[#49313B] text-[#F08089]"
+          : "bg-[#FCE8E9] text-[#B74747]"
+      }`}
+    >
+      <span className="h-1.5 w-1.5 rounded-full bg-[#D45B68]" />
+      <span>Out of stock</span>
+    </span>
+  ) : stock <= 5 ? (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
+        dark
+          ? "bg-[#493F30] text-[#E6B66F]"
+          : "bg-[#FFF3DC] text-[#A66A22]"
+      }`}
+    >
+      <span className="h-1.5 w-1.5 rounded-full bg-[#D99A42]" />
+      <span>Low stock ({stock})</span>
+    </span>
+  ) : (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
+        dark
+          ? "bg-[#244638] text-[#65C995]"
+          : "bg-[#E3F5EB] text-[#27845B]"
+      }`}
+    >
+      <span className="h-1.5 w-1.5 rounded-full bg-[#39A875]" />
+      <span>{stock} in stock</span>
+    </span>
+  )}
+</td>
+                    {/* Actions */}
+<td className="px-4 py-3 whitespace-nowrap">
+  <div className="flex items-center justify-center gap-2">
+    {/* View */}
+    <Link
+      to={`/product/${product._id}`}
+      className={`rounded-lg p-1.5 transition-colors border ${
+        dark
+          ? "border-[#465570] bg-[#26334D] text-[#AAB8D0] hover:bg-[#34415B] hover:text-[#EAF0FA]"
+          : "border-[#D8E1EF] bg-[#F7F9FC] text-[#64718A] hover:bg-[#DFE7F3] hover:text-[#202C50]"
+      }`}
+      title="View in storefront"
+    >
+      <ExternalLink className="w-3.5 h-3.5" />
+    </Link>
 
-                          <Link
-                            to={`/dashboard/products/${product._id}/edit`}
-                            className={`rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors border flex items-center gap-1 ${
-                              dark
-                                ? "border-[#465570] bg-[#171E30] text-[#EAF0FA] hover:bg-[#2D3B56]"
-                                : "border-[#C9D5E7] bg-white text-[#344F82] hover:bg-[#EDF2F9]"
-                            }`}
-                          >
-                            <Pencil className="w-3.5 h-3.5" />
-                            <span>Edit</span>
-                          </Link>
+    {/* Edit */}
+    <Link
+      to={`/dashboard/products/${product._id}/edit`}
+      className={`rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors border flex items-center gap-1 ${
+        dark
+          ? "border-[#465570] bg-[#26334D] text-[#7895C5] hover:bg-[#34415B] hover:text-[#EAF0FA]"
+          : "border-[#D8E1EF] bg-[#F7F9FC] text-[#344F82] hover:bg-[#DFE7F3] hover:text-[#202C50]"
+      }`}
+    >
+      <Pencil className="w-3.5 h-3.5" />
+      <span>Edit</span>
+    </Link>
 
-                          <button
-                            type="button"
-                            onClick={() => handleDelete(product)}
-                            disabled={isDeleting}
-                            className="rounded-lg border border-red-500/30 bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-[#C04452] transition-colors hover:bg-red-100 dark:bg-red-950/30 dark:text-[#F08089] dark:hover:bg-red-950/50 flex items-center gap-1 disabled:opacity-50"
-                            title="Delete product"
-                          >
-                            {isDeleting ? (
-                              <div className="h-3.5 w-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                            ) : (
-                              <Trash2 className="w-3.5 h-3.5" />
-                            )}
-                            <span className="hidden sm:inline">Delete</span>
-                          </button>
-                        </div>
-                      </td>
+    {/* Delete */}
+    <button
+      type="button"
+      onClick={() => handleDelete(product)}
+      disabled={isDeleting}
+      className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold flex items-center gap-1 transition-colors disabled:opacity-50 ${
+        dark
+          ? "border-[#70414C] bg-[#3B2934] text-[#F08089] hover:bg-[#49313B]"
+          : "border-[#F1C9CC] bg-[#FFF1F1] text-[#B74747] hover:bg-[#FCE1E3]"
+      }`}
+      title="Delete product"
+    >
+      {isDeleting ? (
+        <div className="h-3.5 w-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+      ) : (
+        <Trash2 className="w-3.5 h-3.5" />
+      )}
+
+      <span className="hidden sm:inline">Delete</span>
+    </button>
+  </div>
+</td>
                     </tr>
                   );
                 })}
@@ -707,7 +851,9 @@ const AdminProducts = () => {
               <div className="flex items-center gap-1">
                 <button
                   type="button"
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  onClick={() =>
+                    setCurrentPage((p) => Math.max(1, p - 1))
+                  }
                   disabled={currentPage === 1}
                   className={`rounded-lg border px-2.5 py-1 font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
                     dark
@@ -718,8 +864,12 @@ const AdminProducts = () => {
                   Previous
                 </button>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+                {Array.from(
+                  { length: totalPages },
+                  (_, i) => i + 1
+                ).map((pageNum) => {
                   const isCurrent = pageNum === currentPage;
+
                   return (
                     <button
                       key={pageNum}
@@ -731,8 +881,8 @@ const AdminProducts = () => {
                             ? "bg-[#7895C5] text-[#171E30]"
                             : "bg-[#202C50] text-white"
                           : dark
-                          ? "hover:bg-[#2D3B56] text-[#AAB8D0]"
-                          : "hover:bg-[#EDF2F9] text-[#64718A]"
+                            ? "hover:bg-[#2D3B56] text-[#AAB8D0]"
+                            : "hover:bg-[#EDF2F9] text-[#64718A]"
                       }`}
                     >
                       {pageNum}
@@ -742,7 +892,9 @@ const AdminProducts = () => {
 
                 <button
                   type="button"
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  }
                   disabled={currentPage === totalPages}
                   className={`rounded-lg border px-2.5 py-1 font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
                     dark

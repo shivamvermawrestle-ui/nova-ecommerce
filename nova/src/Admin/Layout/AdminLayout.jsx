@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NavLink, Outlet, useLocation, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { UseGlob } from "../../Context/GlobalContext";
@@ -36,9 +36,11 @@ const AdminLayout = () => {
   const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
 
   // Close mobile menu whenever the route changes
-  useEffect(() => {
+  const [prevPath, setPrevPath] = useState(location.pathname);
+  if (prevPath !== location.pathname) {
+    setPrevPath(location.pathname);
     setMobileMenuOpen(false);
-  }, [location.pathname]);
+  }
 
   // Logout handler
   const handleLogout = async () => {

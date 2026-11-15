@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSignupMutation } from "../../services/productsApi";
@@ -23,122 +24,156 @@ const Signup = () => {
     email: "",
     password: "",
   });
+
   const [showPassword, setShowPassword] = useState(false);
 
   const [signup, { isLoading, error }] = useSignupMutation();
 
+  // Theme colors
+  const mainText = dark ? "text-[#EAF0FA]" : "text-[#202C50]";
+  const mutedText = dark ? "text-[#AAB8D0]" : "text-[#64718A]";
+  const secondaryText = dark ? "text-[#8190AA]" : "text-[#8A96AA]";
+  const accentText = dark ? "text-[#7895C5]" : "text-[#344F82]";
+
+  const inputStyle = dark
+    ? "border-[#465570] bg-[#202A40] text-[#EAF0FA] placeholder-[#8190AA] focus:border-[#7895C5] focus:ring-1 focus:ring-[#7895C5]"
+    : "border-[#D8E1EF] bg-white text-[#202C50] placeholder-[#8A96AA] focus:border-[#344F82] focus:ring-1 focus:ring-[#344F82]";
+
+  const cardStyle = dark
+    ? "border-[#35435C] bg-[#202A40]"
+    : "border-[#D8E1EF] bg-white";
+
+  const submitButton = dark
+    ? "bg-[#7895C5] text-[#171E30] hover:bg-[#9BB2D8]"
+    : "bg-[#202C50] text-white hover:bg-[#344F82]";
+
+  const errorBanner = dark
+    ? "border-[#F08089]/30 bg-[#F08089]/10 text-[#F08089]"
+    : "border-[#C04452]/30 bg-[#C04452]/10 text-[#C04452]";
+
   const handleChange = (event) => {
     const { name, value } = event.target;
+
     setSignupData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
+  const getErrorMessage = () => {
+    if (!error) return "";
+    if (error.status === "FETCH_ERROR") {
+      return "Cannot connect to server. Please check your connection or wait a moment for backend to wake up.";
+    }
+    if (typeof error.data?.message === "string") {
+      return error.data.message;
+    }
+    if (typeof error.data === "string") {
+      return error.data;
+    }
+    if (typeof error.message === "string") {
+      return error.message;
+    }
+    return "Signup failed. Please try again.";
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    const sanitizedData = {
+      name: (signupData.name || "").trim(),
+      email: (signupData.email || "").trim().toLowerCase(),
+      password: signupData.password,
+    };
+
     try {
-      await signup(signupData).unwrap();
+      await signup(sanitizedData).unwrap();
+
       navigate("/login", {
-        state: { message: "Account created successfully. Please log in." },
+        state: {
+          message: "Account created successfully. Please log in.",
+        },
       });
     } catch {
-      // RTK Query stores error in `error`
+      // RTK Query stores the error in the error state.
     }
   };
 
   return (
     <main
-      className={`min-h-[calc(100vh-140px)] flex items-center justify-center px-4 sm:px-6 py-10 sm:py-16 transition-colors duration-200 ${
-        dark ? "bg-[#171E30] text-[#EAF0FA]" : "bg-[#F7F9FC] text-[#202C50]"
+      className={`flex min-h-[calc(100vh-140px)] items-center justify-center px-4 py-10 transition-colors duration-200 sm:px-6 sm:py-16 ${
+        dark
+          ? "bg-[#171E30] text-[#EAF0FA]"
+          : "bg-[#F7F9FC] text-[#202C50]"
       }`}
     >
       <div className="mx-auto w-full max-w-6xl">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Column: Animated Storyset Illustration & Welcome Text */}
-          <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left">
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-12">
+          {/* Left Column: Illustration & Welcome Text */}
+          <div className="flex flex-col items-center text-center lg:col-span-6 lg:items-start lg:text-left">
             <h1
-              className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight ${
-                dark ? "text-[#EAF0FA]" : "text-[#202C50]"
-              }`}
+              className={`text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl lg:text-5xl ${mainText}`}
             >
-              Create your <span className={dark ? "text-[#7895C5]" : "text-[#202C50]"}>Nova</span>
-              <span className="text-[#7895C5]">.</span> account
+              Create your{" "}
+              <span className={accentText}>Nova</span>
+              <span className={accentText}>.</span> account
             </h1>
 
             <p
-              className={`mt-3 max-w-md text-sm sm:text-base leading-relaxed ${
-                dark ? "text-[#AAB8D0]" : "text-[#64718A]"
-              }`}
+              className={`mt-3 max-w-md text-sm leading-relaxed sm:text-base ${mutedText}`}
             >
-              Join thousands of happy shoppers exploring top-rated electronics, fashion, and daily deals with fast door-step delivery.
+              Join thousands of happy shoppers exploring top-rated
+              electronics, fashion, and daily deals with fast door-step
+              delivery.
             </p>
 
-            {/* Animated Storyset Illustration (with Infinite Float & Pulse Animations) */}
-            <div className="my-3 sm:my-6 lg:my-8 w-full flex justify-center lg:justify-start">
+            {/* Animated Storyset Illustration */}
+            <div className="my-3 flex w-full justify-center sm:my-6 lg:my-8 lg:justify-start">
               <StorysetSignupIllustration />
             </div>
 
             {/* Trust Highlights */}
-            <div className="hidden sm:flex items-center gap-6 text-xs font-semibold">
-              <div
-                className={`flex items-center gap-1.5 ${
-                  dark ? "text-[#AAB8D0]" : "text-[#64718A]"
-                }`}
-              >
-                <ShieldCheck size={16} className={dark ? "text-[#7895C5]" : "text-[#202C50]"} />
+            <div className="hidden items-center gap-6 text-xs font-semibold sm:flex">
+              <div className={`flex items-center gap-1.5 ${mutedText}`}>
+                <ShieldCheck size={16} className={accentText} />
                 <span>Verified Buyer Protection</span>
               </div>
-              <div
-                className={`flex items-center gap-1.5 ${
-                  dark ? "text-[#AAB8D0]" : "text-[#64718A]"
-                }`}
-              >
-                <Zap size={16} className="text-[#3568A8] dark:text-[#8CB4EC]" />
+
+              <div className={`flex items-center gap-1.5 ${mutedText}`}>
+                <Zap size={16} className={accentText} />
                 <span>Instant Member Perks</span>
               </div>
             </div>
           </div>
 
-          {/* Right Column: Modern Glass / Solid Signup Form Card */}
-          <div className="lg:col-span-6 w-full max-w-md mx-auto">
+          {/* Right Column: Signup Form Card */}
+          <div className="mx-auto w-full max-w-md lg:col-span-6">
             <div
-              className={`rounded-3xl border p-6 sm:p-10 shadow-xl transition-all duration-300 ${
-                dark
-                  ? "border-[#35435C] bg-[#202A40]"
-                  : "border-[#D8E1EF] bg-white"
-              }`}
+              className={`rounded-3xl border p-6 shadow-xl transition-all duration-300 sm:p-10 ${cardStyle}`}
             >
               {/* Form Card Header */}
               <div className="mb-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center text-xl font-black italic tracking-tight">
-                    <span className={dark ? "text-[#7895C5]" : "text-[#202C50]"}>
-                      Nova
-                    </span>
-                    <span className="text-[#7895C5]">.</span>
+                    <span className={accentText}>Nova</span>
+                    <span className={accentText}>.</span>
                   </div>
-                  <span
-                    className={`text-[10px] font-semibold italic ${
-                      dark ? "text-[#AAB8D0]" : "text-[#64718A]"
-                    }`}
-                  >
-                    Explore <span className="text-[#7895C5] font-bold">Store</span>
+
+                  <span className={`text-[10px] font-semibold italic ${mutedText}`}>
+                    Explore{" "}
+                    <span className={`${accentText} font-bold`}>
+                      Store
+                    </span>
                   </span>
                 </div>
 
                 <h2
-                  className={`mt-4 text-2xl font-bold tracking-tight ${
-                    dark ? "text-[#EAF0FA]" : "text-[#202C50]"
-                  }`}
+                  className={`mt-4 text-2xl font-bold tracking-tight ${mainText}`}
                 >
                   Sign Up
                 </h2>
-                <p
-                  className={`mt-1 text-xs sm:text-sm ${
-                    dark ? "text-[#AAB8D0]" : "text-[#64718A]"
-                  }`}
-                >
+
+                <p className={`mt-1 text-xs sm:text-sm ${mutedText}`}>
                   Create an account to begin shopping right away
                 </p>
               </div>
@@ -149,19 +184,16 @@ const Signup = () => {
                 <div className="space-y-1.5">
                   <label
                     htmlFor="name"
-                    className={`block text-xs font-semibold ${
-                      dark ? "text-[#EAF0FA]" : "text-[#202C50]"
-                    }`}
+                    className={`block text-xs font-semibold ${mainText}`}
                   >
                     Full Name
                   </label>
+
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <User
-                        size={17}
-                        className={dark ? "text-[#8190AA]" : "text-[#8A96AA]"}
-                      />
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                      <User size={17} className={secondaryText} />
                     </div>
+
                     <input
                       id="name"
                       type="text"
@@ -171,11 +203,7 @@ const Signup = () => {
                       autoComplete="name"
                       placeholder="John Doe"
                       required
-                      className={`w-full rounded-xl border pl-10 pr-3.5 py-2.5 text-sm outline-none transition-all shadow-2xs ${
-                        dark
-                          ? "border-[#465570] bg-[#202A40] text-[#EAF0FA] placeholder-[#8190AA] focus:border-[#9BB2D8] focus:ring-1 focus:ring-[#9BB2D8]"
-                          : "border-[#C9D5E7] bg-white text-[#202C50] placeholder-[#8A96AA] focus:border-[#7895C5] focus:ring-1 focus:ring-[#7895C5]"
-                      }`}
+                      className={`w-full rounded-xl border py-2.5 pl-10 pr-3.5 text-sm shadow-sm outline-none transition-all ${inputStyle}`}
                     />
                   </div>
                 </div>
@@ -184,19 +212,16 @@ const Signup = () => {
                 <div className="space-y-1.5">
                   <label
                     htmlFor="email"
-                    className={`block text-xs font-semibold ${
-                      dark ? "text-[#EAF0FA]" : "text-[#202C50]"
-                    }`}
+                    className={`block text-xs font-semibold ${mainText}`}
                   >
                     Email Address
                   </label>
+
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <Mail
-                        size={17}
-                        className={dark ? "text-[#8190AA]" : "text-[#8A96AA]"}
-                      />
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                      <Mail size={17} className={secondaryText} />
                     </div>
+
                     <input
                       id="email"
                       type="email"
@@ -206,11 +231,7 @@ const Signup = () => {
                       autoComplete="email"
                       placeholder="name@example.com"
                       required
-                      className={`w-full rounded-xl border pl-10 pr-3.5 py-2.5 text-sm outline-none transition-all shadow-2xs ${
-                        dark
-                          ? "border-[#465570] bg-[#202A40] text-[#EAF0FA] placeholder-[#8190AA] focus:border-[#9BB2D8] focus:ring-1 focus:ring-[#9BB2D8]"
-                          : "border-[#C9D5E7] bg-white text-[#202C50] placeholder-[#8A96AA] focus:border-[#7895C5] focus:ring-1 focus:ring-[#7895C5]"
-                      }`}
+                      className={`w-full rounded-xl border py-2.5 pl-10 pr-3.5 text-sm shadow-sm outline-none transition-all ${inputStyle}`}
                     />
                   </div>
                 </div>
@@ -219,19 +240,16 @@ const Signup = () => {
                 <div className="space-y-1.5">
                   <label
                     htmlFor="password"
-                    className={`block text-xs font-semibold ${
-                      dark ? "text-[#EAF0FA]" : "text-[#202C50]"
-                    }`}
+                    className={`block text-xs font-semibold ${mainText}`}
                   >
                     Password
                   </label>
+
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <Lock
-                        size={17}
-                        className={dark ? "text-[#8190AA]" : "text-[#8A96AA]"}
-                      />
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                      <Lock size={17} className={secondaryText} />
                     </div>
+
                     <input
                       id="password"
                       type={showPassword ? "text" : "password"}
@@ -241,30 +259,37 @@ const Signup = () => {
                       autoComplete="new-password"
                       placeholder="At least 6 characters"
                       required
-                      className={`w-full rounded-xl border pl-10 pr-10 py-2.5 text-sm outline-none transition-all shadow-2xs ${
-                        dark
-                          ? "border-[#465570] bg-[#202A40] text-[#EAF0FA] placeholder-[#8190AA] focus:border-[#9BB2D8] focus:ring-1 focus:ring-[#9BB2D8]"
-                          : "border-[#C9D5E7] bg-white text-[#202C50] placeholder-[#8A96AA] focus:border-[#7895C5] focus:ring-1 focus:ring-[#7895C5]"
-                      }`}
+                      className={`w-full rounded-xl border py-2.5 pl-10 pr-10 text-sm shadow-sm outline-none transition-all ${inputStyle}`}
                     />
+
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className={`absolute inset-y-0 right-0 pr-3.5 flex items-center transition-colors ${
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
+                      className={`absolute inset-y-0 right-0 flex items-center pr-3.5 transition-colors ${
                         dark
                           ? "text-[#8190AA] hover:text-[#EAF0FA]"
                           : "text-[#8A96AA] hover:text-[#202C50]"
                       }`}
                     >
-                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                      {showPassword ? (
+                        <EyeOff size={17} />
+                      ) : (
+                        <Eye size={17} />
+                      )}
                     </button>
                   </div>
                 </div>
 
                 {/* Error Banner */}
                 {error && (
-                  <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs font-semibold text-red-500">
-                    {error.data?.message || "Signup failed. Please try again."}
+                  <div
+                    role="alert"
+                    className={`rounded-xl border p-3 text-xs font-semibold ${errorBanner}`}
+                  >
+                    {getErrorMessage()}
                   </div>
                 )}
 
@@ -272,31 +297,28 @@ const Signup = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className={`w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold shadow-md transition-all duration-200 active:scale-98 disabled:opacity-60 cursor-pointer ${
-                    dark
-                      ? "bg-[#7895C5] text-[#171E30] hover:bg-[#9BB2D8]"
-                      : "bg-[#202C50] text-white hover:bg-[#344F82]"
-                  }`}
+                  className={`flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold shadow-md transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 ${submitButton}`}
                 >
-                  <span>{isLoading ? "Creating account..." : "Sign Up"}</span>
+                  <span>
+                    {isLoading ? "Creating account..." : "Sign Up"}
+                  </span>
+
                   {!isLoading && <ArrowRight size={16} />}
                 </button>
               </form>
 
               {/* Login Redirect */}
               <div
-                className={`mt-6 pt-5 border-t text-center text-xs ${
-                  dark ? "border-[#35435C] text-[#8190AA]" : "border-[#D8E1EF] text-[#64718A]"
+                className={`mt-6 border-t pt-5 text-center text-xs ${
+                  dark
+                    ? "border-[#35435C] text-[#8190AA]"
+                    : "border-[#D8E1EF] text-[#64718A]"
                 }`}
               >
                 Already have an account?{" "}
                 <Link
                   to="/login"
-                  className={`font-bold transition-colors ${
-                    dark
-                      ? "text-[#7895C5] hover:underline"
-                      : "text-[#202C50] hover:underline"
-                  }`}
+                  className={`font-bold transition-colors hover:underline ${accentText}`}
                 >
                   Log in
                 </Link>

@@ -174,15 +174,28 @@ deleteProduct:builder.mutation({
       async onQueryStarted(_arg, { queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
-          if (data?.data && typeof window !== 'undefined') {
-            localStorage.setItem('nova_token', data.data)
+          if ( typeof window !== 'undefined') {
+    if(data?.data){
+      localStorage.setItem("nova_token",data.data)
+    }
+    if(data?.user){
+      localStorage.setItem("nova_user",JSON.stringify(data.user))
+    }
           }
-        } catch {}
+        } catch (err) {
+          void err;
+        }
       },
+      invalidatesTags:["Users","Cart","CartCount","Orders","Wishlist"]
     }),
     getCurrentUser: builder.query({
       query: () => '/user-details',
-      transformResponse:(response)=>response.data
+      transformResponse:(response)=>{
+        if(response?.data && typeof window !== "undefined"){
+          localStorage.setItem("nova_user",JSON.stringify(response.data))
+        } return response?.data
+      },
+      providesTags:["Users"]
        
       }),
       logout:builder.mutation({
@@ -196,10 +209,12 @@ query:()=>({
         } finally {
           if (typeof window !== 'undefined') {
             localStorage.removeItem('nova_token')
+            localStorage.removeItem("nova_user")
             localStorage.removeItem('token')
           }
         }
       },
+      invalidatesTags:["Users","Cart","CartCount","Orders","Wishlist"]
       }),
       // USERS 
 getUsers:builder.query({

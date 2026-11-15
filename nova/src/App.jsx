@@ -48,7 +48,9 @@ const PageLoader = () => {
     <div className="min-h-screen flex items-center justify-center">
       <div className="flex flex-col items-center gap-2">
         <div className="w-12 h-12 border-4 border-[#D8E1EF] border-t-[#202C50] dark:border-[#35435C] dark:border-t-[#7895C5] rounded-full animate-spin" />
-        <p className="text-[#64718A] dark:text-[#AAB8D0] text-sm font-medium">Loading page...</p>
+        <p className="text-[#64718A] dark:text-[#AAB8D0] text-sm font-medium">
+          Loading page...
+        </p>
       </div>
     </div>
   );

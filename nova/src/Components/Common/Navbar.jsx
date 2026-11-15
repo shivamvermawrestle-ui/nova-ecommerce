@@ -1,3 +1,4 @@
+
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { UseGlob } from "../../Context/GlobalContext";
@@ -33,7 +34,9 @@ const Navbar = () => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const { data: user, isLoading: checkingUser } = useGetCurrentUserQuery();
+  const { data: user, isLoading: checkingUser } =
+    useGetCurrentUserQuery();
+
   const [logout, { isLoading: isLogginOut, error: logoutError }] =
     useLogoutMutation();
 
@@ -44,7 +47,10 @@ const Navbar = () => {
   const { data: wishlist = [] } = useGetWishlistQuery(undefined, {
     skip: !user,
   });
-  const wishlistCount = wishlist.filter((item) => item.productId).length;
+
+  const wishlistCount = wishlist.filter(
+    (item) => item.productId
+  ).length;
 
   const closeMenu = () => {
     setMenuOpen(false);
@@ -62,28 +68,63 @@ const Navbar = () => {
     }
   };
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
         setUserDropdownOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Theme colors
+  const hoverBg = dark
+    ? "hover:bg-[#171E30]"
+    : "hover:bg-[#F7F9FC]";
+
+  const navHoverBg = dark
+    ? "hover:bg-[#171E30]"
+    : "hover:bg-[#EDF2F9]";
+
+  const mutedText = dark
+    ? "text-[#AAB8D0]"
+    : "text-[#64718A]";
+
+  const mainText = dark
+    ? "text-[#EAF0FA]"
+    : "text-[#202C50]";
+
+  const logoAccent = dark
+    ? "text-[#7895C5]"
+    : "text-[#344F82]";
+
+  const adminButton = dark
+    ? "bg-[#7895C5] text-[#171E30] hover:bg-[#9BB2D8]"
+    : "bg-[#202C50] text-white hover:bg-[#344F82]";
+
+  // Consistent Logout button colors
+  const logoutButton = dark
+    ? "border border-[#F08089]/40 bg-[#352735] text-[#F08089] hover:bg-[#49303A] hover:border-[#F08089]"
+    : "border border-[#F3C5C9] bg-[#FFF1F2] text-[#C04452] hover:bg-[#FFE1E4] hover:border-[#C04452]";
 
   return (
     <div
-      className={`sticky top-0 z-50 transition-colors duration-200 ${
-        dark ? "bg-[#171E30]" : "bg-[#FFFFFF]"
+      className={`sticky top-0 z-100 transition-colors duration-200 ${
+        dark ? "bg-[#171E30]" : "bg-white"
       }`}
     >
       <header
         className={`border-b transition-colors duration-200 ${
           dark
             ? "border-[#35435C] bg-[#171E30] text-[#EAF0FA]"
-            : "border-[#D8E1EF] bg-[#FFFFFF] text-[#202C50]"
+            : "border-[#D8E1EF] bg-white text-[#202C50]"
         }`}
       >
         <div className="mx-auto max-w-7xl px-3 sm:px-6">
@@ -95,46 +136,47 @@ const Navbar = () => {
                 <span className={dark ? "text-[#7895C5]" : "text-[#202C50]"}>
                   Nova
                 </span>
-                <span className="text-[#3568A8] dark:text-[#8CB4EC]">.</span>
+                <span className={logoAccent}>.</span>
               </div>
+
               <span
-                className={`text-[10px] font-semibold tracking-wider flex items-center gap-0.5 ${
-                  dark ? "text-[#AAB8D0]" : "text-[#64718A]"
-                }`}
+                className={`flex items-center gap-0.5 text-[10px] font-semibold tracking-wider ${mutedText}`}
               >
-                Cobalt <span className="text-[#3568A8] dark:text-[#8CB4EC] font-bold">Cloud</span>
+                Cobalt <span className={`font-bold ${logoAccent}`}>Cloud</span>
               </span>
             </Link>
 
-            {/* Desktop Search Bar */}
-            <div className="hidden min-w-0 flex-1 lg:block max-w-2xl">
+            {/* Desktop Search */}
+            <div className="hidden min-w-0 max-w-2xl flex-1 lg:block">
               <StoreSearchForm />
             </div>
 
-            {/* Desktop Account, Wishlist & Cart Actions */}
+            {/* Desktop Actions */}
             <div className="hidden shrink-0 items-center gap-5 lg:flex">
-              {/* User Account / Login Dropdown */}
+              {/* User Account */}
               <div className="relative" ref={dropdownRef}>
                 {checkingUser ? (
-                  <span className="text-xs font-medium text-[#8A96AA] dark:text-[#8190AA]">
+                  <span className={`text-xs font-medium ${mutedText}`}>
                     Checking...
                   </span>
                 ) : user ? (
                   <>
                     <button
                       type="button"
-                      onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                      onClick={() =>
+                        setUserDropdownOpen(!userDropdownOpen)
+                      }
                       className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-semibold transition-colors ${
                         dark
                           ? "text-[#EAF0FA] hover:bg-[#202A40]"
-                          : "text-[#202C50] hover:bg-[#EDF2F9]"
+                          : "text-[#202C50] hover:bg-[#F7F9FC]"
                       }`}
                     >
                       <div
-                        className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
+                        className={`flex h-7 w-7 items-center justify-center rounded-full border text-xs font-bold ${
                           dark
-                            ? "bg-[#202A40] text-[#7895C5] border border-[#35435C]"
-                            : "bg-[#DFE7F3] text-[#202C50] border border-[#D8E1EF]"
+                            ? "border-[#35435C] bg-[#202A40] text-[#7895C5]"
+                            : "border-[#D8E1EF] bg-[#DFE7F3] text-[#344F82]"
                         }`}
                       >
                         {user.name ? (
@@ -143,7 +185,11 @@ const Navbar = () => {
                           <User size={14} />
                         )}
                       </div>
-                      <span className="max-w-28 truncate">{user.name}</span>
+
+                      <span className="max-w-28 truncate">
+                        {user.name}
+                      </span>
+
                       <ChevronDown
                         size={14}
                         className={`transition-transform duration-200 ${
@@ -152,13 +198,13 @@ const Navbar = () => {
                       />
                     </button>
 
-                    {/* Dropdown Menu */}
+                    {/* Desktop Dropdown */}
                     {userDropdownOpen && (
                       <div
                         className={`absolute right-0 top-11 z-50 w-56 rounded-xl border p-2 shadow-xl transition-all ${
                           dark
                             ? "border-[#35435C] bg-[#202A40] text-[#EAF0FA]"
-                            : "border-[#D8E1EF] bg-[#FFFFFF] text-[#202C50]"
+                            : "border-[#D8E1EF] bg-white text-[#202C50]"
                         }`}
                       >
                         <div
@@ -169,11 +215,7 @@ const Navbar = () => {
                           }`}
                         >
                           Signed in as{" "}
-                          <span
-                            className={`font-semibold ${
-                              dark ? "text-[#EAF0FA]" : "text-[#202C50]"
-                            }`}
-                          >
+                          <span className={`font-semibold ${mainText}`}>
                             {user.email || user.name}
                           </span>
                         </div>
@@ -185,7 +227,7 @@ const Navbar = () => {
                             className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                               dark
                                 ? "text-[#7895C5] hover:bg-[#171E30]"
-                                : "text-[#202C50] hover:bg-[#EDF2F9]"
+                                : "text-[#344F82] hover:bg-[#F7F9FC]"
                             }`}
                           >
                             <ShieldCheck size={16} />
@@ -196,41 +238,30 @@ const Navbar = () => {
                         <Link
                           to="/orders"
                           onClick={closeMenu}
-                          className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
-                            dark
-                              ? "hover:bg-[#171E30] text-[#EAF0FA]"
-                              : "hover:bg-[#EDF2F9] text-[#202C50]"
-                          }`}
+                          className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${hoverBg} ${mainText}`}
                         >
-                          <Package
-                            size={16}
-                            className={
-                              dark ? "text-[#AAB8D0]" : "text-[#64718A]"
-                            }
-                          />
+                          <Package size={16} className={mutedText} />
                           <span>My Orders</span>
                         </Link>
 
                         <Link
                           to="/wishlist"
                           onClick={closeMenu}
-                          className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors ${
-                            dark
-                              ? "hover:bg-[#171E30] text-[#EAF0FA]"
-                              : "hover:bg-[#EDF2F9] text-[#202C50]"
-                          }`}
+                          className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors ${hoverBg} ${mainText}`}
                         >
                           <div className="flex items-center gap-2.5">
-                            <Heart
-                              size={16}
-                              className={
-                                dark ? "text-[#AAB8D0]" : "text-[#64718A]"
-                              }
-                            />
+                            <Heart size={16} className={mutedText} />
                             <span>Wishlist</span>
                           </div>
+
                           {wishlistCount > 0 && (
-                            <span className="rounded-full bg-[#DFE7F3] px-2 py-0.5 text-xs font-bold text-[#202C50] dark:bg-[#34415B] dark:text-[#7895C5]">
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-xs font-bold ${
+                                dark
+                                  ? "bg-[#34415B] text-[#7895C5]"
+                                  : "bg-[#DFE7F3] text-[#344F82]"
+                              }`}
+                            >
                               {wishlistCount}
                             </span>
                           )}
@@ -242,11 +273,12 @@ const Navbar = () => {
                           }`}
                         />
 
+                        {/* FIXED DESKTOP LOGOUT */}
                         <button
                           type="button"
                           onClick={handleLogout}
                           disabled={isLogginOut}
-                          className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-[#C04452] dark:text-[#F08089] transition-colors hover:bg-rose-50 dark:hover:bg-rose-950/30 disabled:opacity-50"
+                          className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${logoutButton}`}
                         >
                           <LogOut size={16} />
                           <span>
@@ -263,7 +295,7 @@ const Navbar = () => {
                     className={`flex items-center gap-2 rounded-lg border px-4 py-1.5 text-sm font-semibold transition-all ${
                       dark
                         ? "border-[#7895C5] bg-[#202A40] text-[#7895C5] hover:bg-[#2D3B56]"
-                        : "border-[#202C50] bg-white text-[#202C50] hover:bg-[#EDF2F9]"
+                        : "border-[#D8E1EF] bg-white text-[#202C50] hover:border-[#344F82] hover:bg-[#F7F9FC]"
                     }`}
                   >
                     <User size={16} />
@@ -273,7 +305,7 @@ const Navbar = () => {
                 )}
               </div>
 
-              {/* Wishlist Quick Link */}
+              {/* Wishlist */}
               <Link
                 to="/wishlist"
                 className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${
@@ -285,7 +317,7 @@ const Navbar = () => {
                 <div className="relative">
                   <Heart size={18} />
                   {wishlistCount > 0 && (
-                    <span className="absolute -top-1.5 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#C34D68] text-[10px] font-bold text-white">
+                    <span className="absolute -right-2 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#C04452] text-[10px] font-bold text-white">
                       {wishlistCount}
                     </span>
                   )}
@@ -293,19 +325,19 @@ const Navbar = () => {
                 <span>Wishlist</span>
               </Link>
 
-              {/* Cart Button */}
+              {/* Cart */}
               <Link
                 to="/cart"
                 className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
                   dark
                     ? "text-[#EAF0FA] hover:bg-[#202A40]"
-                    : "text-[#202C50] hover:bg-[#EDF2F9]"
+                    : "text-[#202C50] hover:bg-[#F7F9FC]"
                 }`}
               >
                 <div className="relative">
                   <ShoppingCart size={20} />
                   {cartCount > 0 && (
-                    <span className="absolute -top-2 -right-2 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[#C34D68] text-[10px] font-black text-white">
+                    <span className="absolute -right-2 -top-2 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[#C04452] text-[10px] font-black text-white">
                       {cartCount}
                     </span>
                   )}
@@ -313,7 +345,7 @@ const Navbar = () => {
                 <span>Cart</span>
               </Link>
 
-              {/* Theme Toggle Button */}
+              {/* Theme Toggle */}
               <button
                 type="button"
                 onClick={() => setDark(!dark)}
@@ -321,24 +353,24 @@ const Navbar = () => {
                 className={`flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold transition-all ${
                   dark
                     ? "border-[#35435C] bg-[#202A40] text-[#7895C5] hover:bg-[#2D3B56]"
-                    : "border-[#D8E1EF] bg-white text-[#202C50] hover:bg-[#EDF2F9]"
+                    : "border-[#D8E1EF] bg-white text-[#344F82] hover:bg-[#F7F9FC]"
                 }`}
               >
                 {dark ? (
                   <>
-                    <Sun size={13} className="text-[#E6B66F] fill-[#E6B66F]" />
+                    <Sun size={13} className="fill-[#E6B66F] text-[#E6B66F]" />
                     <span>Light</span>
                   </>
                 ) : (
                   <>
-                    <Moon size={13} className="text-[#202C50]" />
+                    <Moon size={13} />
                     <span>Dark</span>
                   </>
                 )}
               </button>
             </div>
 
-            {/* Mobile Header Right Controls: Theme Toggle, Cart & Hamburger */}
+            {/* Mobile Controls */}
             <div className="flex items-center gap-2 lg:hidden">
               <button
                 type="button"
@@ -346,12 +378,12 @@ const Navbar = () => {
                 className={`rounded-lg p-2 transition-colors ${
                   dark
                     ? "text-[#7895C5] hover:bg-[#202A40]"
-                    : "text-[#202C50] hover:bg-[#EDF2F9]"
+                    : "text-[#344F82] hover:bg-[#F7F9FC]"
                 }`}
                 title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"}
               >
                 {dark ? (
-                  <Sun size={20} className="text-[#E6B66F] fill-[#E6B66F]" />
+                  <Sun size={20} className="fill-[#E6B66F] text-[#E6B66F]" />
                 ) : (
                   <Moon size={20} />
                 )}
@@ -363,12 +395,12 @@ const Navbar = () => {
                 className={`relative rounded-lg p-2 transition-colors ${
                   dark
                     ? "text-[#EAF0FA] hover:bg-[#202A40]"
-                    : "text-[#202C50] hover:bg-[#EDF2F9]"
+                    : "text-[#202C50] hover:bg-[#F7F9FC]"
                 }`}
               >
                 <ShoppingCart size={21} />
                 {cartCount > 0 && (
-                  <span className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-[#C34D68] text-[10px] font-black text-white">
+                  <span className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-[#C04452] text-[10px] font-black text-white">
                     {cartCount}
                   </span>
                 )}
@@ -382,7 +414,7 @@ const Navbar = () => {
                 className={`rounded-lg p-2 transition-colors ${
                   dark
                     ? "text-[#EAF0FA] hover:bg-[#202A40]"
-                    : "text-[#202C50] hover:bg-[#EDF2F9]"
+                    : "text-[#202C50] hover:bg-[#F7F9FC]"
                 }`}
               >
                 {menuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -390,23 +422,23 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Mobile Search Bar (Full Width) */}
+          {/* Mobile Search */}
           <div className="pb-2.5 lg:hidden">
             <StoreSearchForm />
           </div>
 
-          {/* Mobile Dropdown Drawer */}
+          {/* Mobile Drawer */}
           {menuOpen && (
             <div
-              className={`rounded-2xl border p-4 shadow-2xl mb-3 flex flex-col gap-3 lg:hidden ${
+              className={`mb-3 flex flex-col gap-3 rounded-2xl border p-4 shadow-2xl lg:hidden ${
                 dark
                   ? "border-[#35435C] bg-[#202A40] text-[#EAF0FA]"
-                  : "border-[#D8E1EF] bg-[#FFFFFF] text-[#202C50]"
+                  : "border-[#D8E1EF] bg-white text-[#202C50]"
               }`}
             >
-              {/* User Section on Mobile */}
+              {/* Mobile User Section */}
               {checkingUser ? (
-                <p className="text-xs text-[#8A96AA] dark:text-[#8190AA]">
+                <p className={`text-xs ${mutedText}`}>
                   Checking account...
                 </p>
               ) : user ? (
@@ -415,17 +447,19 @@ const Navbar = () => {
                     dark ? "border-[#35435C]" : "border-[#D8E1EF]"
                   }`}
                 >
-                  <p className="text-xs text-[#64718A] dark:text-[#AAB8D0]">
+                  <p className={`text-xs ${mutedText}`}>
                     Signed in as
                   </p>
-                  <p className="text-sm font-bold truncate">
+
+                  <p className="truncate text-sm font-bold">
                     {user.name} ({user.email})
                   </p>
+
                   {user.role === "ADMIN" && (
                     <Link
                       to="/dashboard"
                       onClick={closeMenu}
-                      className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-[#202C50] px-3 py-1.5 text-xs font-semibold text-white dark:bg-[#7895C5] dark:text-[#171E30]"
+                      className={`mt-2 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${adminButton}`}
                     >
                       <ShieldCheck size={14} />
                       <span>Admin Dashboard</span>
@@ -436,29 +470,26 @@ const Navbar = () => {
                 <Link
                   to="/login"
                   onClick={closeMenu}
-                  className="rounded-lg bg-[#202C50] py-2 text-center text-sm font-bold text-white dark:bg-[#7895C5] dark:text-[#171E30]"
+                  className={`rounded-lg py-2 text-center text-sm font-bold transition-colors ${adminButton}`}
                 >
                   Login to your account
                 </Link>
               )}
 
-              {/* Nav links */}
-              <nav className="flex flex-col gap-2 font-medium text-sm">
+              {/* Mobile Navigation Links */}
+              <nav className={`flex flex-col gap-2 text-sm font-medium ${mainText}`}>
                 <Link
                   to="/"
                   onClick={closeMenu}
-                  className={`px-3 py-1.5 rounded-lg transition-colors ${
-                    dark ? "hover:bg-[#171E30]" : "hover:bg-[#EDF2F9]"
-                  }`}
+                  className={`rounded-lg px-3 py-1.5 transition-colors ${navHoverBg}`}
                 >
                   Home
                 </Link>
+
                 <Link
                   to="/shop"
                   onClick={closeMenu}
-                  className={`px-3 py-1.5 rounded-lg transition-colors ${
-                    dark ? "hover:bg-[#171E30]" : "hover:bg-[#EDF2F9]"
-                  }`}
+                  className={`rounded-lg px-3 py-1.5 transition-colors ${navHoverBg}`}
                 >
                   Shop
                 </Link>
@@ -466,27 +497,25 @@ const Navbar = () => {
                 <Link
                   to="/orders"
                   onClick={closeMenu}
-                  className={`px-3 py-1.5 rounded-lg transition-colors flex items-center justify-between ${
-                    dark ? "hover:bg-[#171E30]" : "hover:bg-[#EDF2F9]"
-                  }`}
+                  className={`flex items-center justify-between rounded-lg px-3 py-1.5 transition-colors ${navHoverBg}`}
                 >
                   <span>My Orders</span>
-                  <Package size={16} />
+                  <Package size={16} className={mutedText} />
                 </Link>
+
                 <Link
                   to="/wishlist"
                   onClick={closeMenu}
-                  className={`px-3 py-1.5 rounded-lg transition-colors flex items-center justify-between ${
-                    dark ? "hover:bg-[#171E30]" : "hover:bg-[#EDF2F9]"
-                  }`}
+                  className={`flex items-center justify-between rounded-lg px-3 py-1.5 transition-colors ${navHoverBg}`}
                 >
                   <span>Wishlist</span>
-                  <span className="text-xs font-bold text-[#202C50] dark:text-[#7895C5]">
+                  <span className={`text-xs font-bold ${logoAccent}`}>
                     ({wishlistCount})
                   </span>
                 </Link>
               </nav>
 
+              {/* FIXED MOBILE LOGOUT */}
               {user && (
                 <div
                   className={`border-t pt-3 ${
@@ -497,10 +526,12 @@ const Navbar = () => {
                     type="button"
                     onClick={handleLogout}
                     disabled={isLogginOut}
-                    className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#C04452] bg-rose-50 py-2 text-sm font-semibold text-[#C04452] dark:bg-rose-950/40 dark:text-[#F08089] dark:border-[#F08089]/30"
+                    className={`flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${logoutButton}`}
                   >
                     <LogOut size={16} />
-                    <span>{isLogginOut ? "Logging out..." : "Logout"}</span>
+                    <span>
+                      {isLogginOut ? "Logging out..." : "Logout"}
+                    </span>
                   </button>
                 </div>
               )}
@@ -509,7 +540,7 @@ const Navbar = () => {
         </div>
       </header>
 
-      {/* Row 3: Category Navigation Bar */}
+      {/* Category Navigation */}
       <StoreBrowseBar />
 
       {logoutError && (

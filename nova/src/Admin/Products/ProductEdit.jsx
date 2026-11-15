@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import CloudinaryImageUpload from "../../Components/Upload/CloudinaryImageUpload";
 import { UseGlob } from "../../Context/GlobalContext";
@@ -10,7 +10,6 @@ import {
   ArrowLeft,
   Package,
   Tag,
-  DollarSign,
   Layers,
   Sparkles,
   CheckCircle2,
@@ -18,6 +17,7 @@ import {
   Eye,
   Upload,
   ExternalLink,
+  IndianRupee,
 } from "lucide-react";
 
 const SUGGESTED_CATEGORIES = [
@@ -113,29 +113,74 @@ const ProductEditForm = ({ id, product }) => {
   // Pricing calculations
   const originalPrice = parseFloat(form.price) || 0;
   const sellingPrice = parseFloat(form.sellingPrice) || 0;
-  const hasDiscount = originalPrice > 0 && sellingPrice > 0 && sellingPrice < originalPrice;
+
+  const hasDiscount =
+    originalPrice > 0 &&
+    sellingPrice > 0 &&
+    sellingPrice < originalPrice;
+
   const discountPercent = hasDiscount
     ? Math.round(((originalPrice - sellingPrice) / originalPrice) * 100)
     : 0;
-  const priceWarning = originalPrice > 0 && sellingPrice > 0 && sellingPrice > originalPrice;
+
+  const priceWarning =
+    originalPrice > 0 &&
+    sellingPrice > 0 &&
+    sellingPrice > originalPrice;
 
   // Stock status calculation
   const stockNum = parseInt(form.stock, 10);
+
   const stockStatus =
     isNaN(stockNum) || stockNum <= 0
-      ? { label: "Out of Stock", style: "text-[#C04452] dark:text-[#F08089] bg-red-100 dark:bg-red-950/40" }
+      ? {
+          label: "Out of Stock",
+          style: dark
+            ? "bg-[#49313B] text-[#F08089]"
+            : "bg-[#FCE8E9] text-[#B74747]",
+        }
       : stockNum <= 5
-      ? { label: `Low Stock (${stockNum})`, style: "text-[#A66A22] dark:text-[#E6B66F] bg-amber-100 dark:bg-amber-950/40" }
-      : { label: `In Stock (${stockNum})`, style: "text-[#27845B] dark:text-[#65C995] bg-emerald-100 dark:bg-emerald-950/40" };
+      ? {
+          label: `Low Stock (${stockNum})`,
+          style: dark
+            ? "bg-[#493F30] text-[#E6B66F]"
+            : "bg-[#FFF3DC] text-[#A66A22]",
+        }
+      : {
+          label: `In Stock (${stockNum})`,
+          style: dark
+            ? "bg-[#244638] text-[#65C995]"
+            : "bg-[#E3F5EB] text-[#27845B]",
+        };
 
   const inputClass = `w-full rounded-xl border p-2.5 text-sm outline-none transition-colors shadow-2xs ${
     dark
       ? "border-[#465570] bg-[#171E30] text-[#EAF0FA] placeholder-[#8190AA] focus:border-[#9BB2D8] focus:ring-2 focus:ring-[#9BB2D8]/20"
-      : "border-[#C9D5E7] bg-white text-[#202C50] placeholder-[#8A96AA] focus:border-[#7895C5] focus:ring-2 focus:ring-[#7895C5]/20"
+      : "border-[#D8E1EF] bg-white text-[#202C50] placeholder-[#8A96AA] focus:border-[#7895C5] focus:ring-2 focus:ring-[#7895C5]/20"
   }`;
 
   const labelClass = `text-xs font-semibold uppercase tracking-wider ${
     dark ? "text-[#AAB8D0]" : "text-[#64718A]"
+  }`;
+
+  const cardClass = `rounded-2xl border shadow-sm transition-colors flex flex-col gap-4 ${
+    dark
+      ? "border-[#35435C] bg-[#202A40]"
+      : "border-[#D8E1EF] bg-white"
+  }`;
+
+  const headingClass = `text-sm sm:text-base font-bold tracking-tight ${
+    dark ? "text-[#EAF0FA]" : "text-[#202C50]"
+  }`;
+
+  const dividerClass = dark
+    ? "border-[#35435C]"
+    : "border-[#D8E1EF]";
+
+  const primaryButtonClass = `rounded-xl px-5 py-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7895C5] disabled:cursor-not-allowed disabled:opacity-50 flex items-center gap-2 shadow-xs ${
+    dark
+      ? "bg-[#7895C5] text-[#171E30] hover:bg-[#9BB2D8]"
+      : "bg-[#202C50] text-white hover:bg-[#344F82]"
   }`;
 
   return (
@@ -154,6 +199,7 @@ const ProductEditForm = ({ id, product }) => {
               <span>Back to Products</span>
             </Link>
           </div>
+
           <div className="flex items-center gap-2.5 flex-wrap">
             <h1
               className={`text-xl lg:text-2xl font-bold tracking-tight ${
@@ -162,6 +208,7 @@ const ProductEditForm = ({ id, product }) => {
             >
               Edit Product
             </h1>
+
             <span
               className={`font-mono text-xs px-2.5 py-0.5 rounded-full border ${
                 dark
@@ -172,6 +219,7 @@ const ProductEditForm = ({ id, product }) => {
               #{id.slice(-6).toUpperCase()}
             </span>
           </div>
+
           <p
             className={`text-xs sm:text-sm mt-0.5 ${
               dark ? "text-[#8190AA]" : "text-[#64718A]"
@@ -189,7 +237,7 @@ const ProductEditForm = ({ id, product }) => {
             className={`rounded-xl border px-3.5 py-2 text-xs font-semibold flex items-center gap-1.5 transition-colors ${
               dark
                 ? "border-[#465570] bg-[#202A40] text-[#AAB8D0] hover:text-[#EAF0FA] hover:bg-[#2D3B56]"
-                : "border-[#C9D5E7] bg-white text-[#64718A] hover:text-[#202C50] hover:bg-[#EDF2F9]"
+                : "border-[#D8E1EF] bg-[#F7F9FC] text-[#64718A] hover:text-[#202C50] hover:bg-[#DFE7F3]"
             }`}
             title="View product in storefront"
           >
@@ -202,7 +250,7 @@ const ProductEditForm = ({ id, product }) => {
             className={`rounded-xl border px-4 py-2 text-xs font-semibold transition-colors ${
               dark
                 ? "border-[#465570] bg-[#202A40] text-[#EAF0FA] hover:bg-[#2D3B56]"
-                : "border-[#C9D5E7] bg-white text-[#344F82] hover:bg-[#EDF2F9]"
+                : "border-[#D8E1EF] bg-[#F7F9FC] text-[#344F82] hover:bg-[#DFE7F3]"
             }`}
           >
             Cancel
@@ -212,7 +260,7 @@ const ProductEditForm = ({ id, product }) => {
             type="button"
             onClick={handleSubmit}
             disabled={saving}
-            className="rounded-xl bg-[#202C50] px-5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#344F82] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7895C5] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#7895C5] dark:text-[#171E30] dark:hover:bg-[#9BB2D8] flex items-center gap-2 shadow-xs"
+            className={primaryButtonClass}
           >
             {saving ? (
               <>
@@ -233,35 +281,36 @@ const ProductEditForm = ({ id, product }) => {
       {(formError || saveError) && (
         <div
           role="alert"
-          className="flex items-center gap-3 rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-xs sm:text-sm font-semibold text-[#C04452] dark:text-[#F08089]"
+          className={`flex items-center gap-3 rounded-2xl border p-4 text-xs sm:text-sm font-semibold ${
+            dark
+              ? "border-[#70414C] bg-[#3B2934] text-[#F08089]"
+              : "border-[#F1C9CC] bg-[#FFF1F1] text-[#B74747]"
+          }`}
         >
           <AlertCircle className="w-5 h-5 shrink-0" />
-          <span>{formError || saveError?.data?.message || "Could not update product."}</span>
+          <span>
+            {formError ||
+              saveError?.data?.message ||
+              "Could not update product."}
+          </span>
         </div>
       )}
 
-      {/* Main Studio Form: 2-Column Grid */}
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Left Column (2 Cols): Core Product Details & Media & Pricing */}
+      {/* Main Studio Form */}
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start"
+      >
+        {/* Left Column */}
         <div className="lg:col-span-2 flex flex-col gap-6">
-          {/* Card: Basic Information */}
-          <section
-            className={`rounded-2xl border p-5 sm:p-6 shadow-sm transition-colors flex flex-col gap-4 ${
-              dark
-                ? "border-[#35435C] bg-[#202A40]"
-                : "border-[#D8E1EF] bg-white"
-            }`}
-          >
-            <div className="flex items-center justify-between pb-3 border-b dark:border-[#35435C] border-[#D8E1EF]">
+          {/* Basic Information */}
+          <section className={`${cardClass} p-5 sm:p-6`}>
+            <div
+              className={`flex items-center justify-between pb-3 border-b ${dividerClass}`}
+            >
               <div className="flex items-center gap-2.5">
                 <Package className="w-4 h-4 text-[#7895C5]" />
-                <h2
-                  className={`text-sm sm:text-base font-bold tracking-tight ${
-                    dark ? "text-[#EAF0FA]" : "text-[#202C50]"
-                  }`}
-                >
-                  General Information
-                </h2>
+                <h2 className={headingClass}>General Information</h2>
               </div>
             </div>
 
@@ -291,28 +340,19 @@ const ProductEditForm = ({ id, product }) => {
             </div>
           </section>
 
-          {/* Card: Media Studio */}
-          <section
-            className={`rounded-2xl border p-5 sm:p-6 shadow-sm transition-colors flex flex-col gap-4 ${
-              dark
-                ? "border-[#35435C] bg-[#202A40]"
-                : "border-[#D8E1EF] bg-white"
-            }`}
-          >
-            <div className="flex items-center justify-between pb-3 border-b dark:border-[#35435C] border-[#D8E1EF]">
+          {/* Media Studio */}
+          <section className={`${cardClass} p-5 sm:p-6`}>
+            <div
+              className={`flex items-center justify-between pb-3 border-b ${dividerClass}`}
+            >
               <div className="flex items-center gap-2.5">
                 <Upload className="w-4 h-4 text-[#7895C5]" />
-                <h2
-                  className={`text-sm sm:text-base font-bold tracking-tight ${
-                    dark ? "text-[#EAF0FA]" : "text-[#202C50]"
-                  }`}
-                >
-                  Product Media
-                </h2>
+                <h2 className={headingClass}>Product Media</h2>
               </div>
+
               <span
                 className={`text-xs ${
-                  dark ? "text-[#8190AA]" : "text-[#8A96AA]"
+                  dark ? "text-[#8190AA]" : "text-[#64718A]"
                 }`}
               >
                 Cloudinary Asset
@@ -323,9 +363,13 @@ const ProductEditForm = ({ id, product }) => {
               <CloudinaryImageUpload
                 value={form.productImage}
                 onChange={(productImage) =>
-                  setForm((previousForm) => ({ ...previousForm, productImage }))
+                  setForm((previousForm) => ({
+                    ...previousForm,
+                    productImage,
+                  }))
                 }
               />
+
               <p
                 className={`text-[11px] ${
                   dark ? "text-[#8190AA]" : "text-[#8A96AA]"
@@ -336,28 +380,24 @@ const ProductEditForm = ({ id, product }) => {
             </div>
           </section>
 
-          {/* Card: Pricing & Profitability */}
-          <section
-            className={`rounded-2xl border p-5 sm:p-6 shadow-sm transition-colors flex flex-col gap-4 ${
-              dark
-                ? "border-[#35435C] bg-[#202A40]"
-                : "border-[#D8E1EF] bg-white"
-            }`}
-          >
-            <div className="flex items-center justify-between pb-3 border-b dark:border-[#35435C] border-[#D8E1EF]">
+          {/* Pricing & Profitability */}
+          <section className={`${cardClass} p-5 sm:p-6`}>
+            <div
+              className={`flex items-center justify-between pb-3 border-b ${dividerClass}`}
+            >
               <div className="flex items-center gap-2.5">
-                <DollarSign className="w-4 h-4 text-[#7895C5]" />
-                <h2
-                  className={`text-sm sm:text-base font-bold tracking-tight ${
-                    dark ? "text-[#EAF0FA]" : "text-[#202C50]"
-                  }`}
-                >
-                  Pricing & Margins
-                </h2>
+                <IndianRupee  className="w-4 h-4 text-[#7895C5]" />
+                <h2 className={headingClass}>Pricing & Margins</h2>
               </div>
 
               {hasDiscount && (
-                <span className="rounded-full bg-red-100 text-[#B74747] dark:bg-red-950/40 dark:text-[#F08080] px-2.5 py-0.5 text-xs font-bold">
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                    dark
+                      ? "bg-[#49313B] text-[#F08089]"
+                      : "bg-[#FCE8E9] text-[#B74747]"
+                  }`}
+                >
                   {discountPercent}% OFF
                 </span>
               )}
@@ -365,15 +405,19 @@ const ProductEditForm = ({ id, product }) => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
-                <label className={labelClass}>Original Price (MSRP) *</label>
+                <label className={labelClass}>
+                  Original Price (MSRP) *
+                </label>
+
                 <div className="relative">
                   <span
                     className={`absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold ${
                       dark ? "text-[#8190AA]" : "text-[#8A96AA]"
                     }`}
                   >
-                    $
+      <IndianRupee  size={13}/>
                   </span>
+
                   <input
                     type="number"
                     min="0"
@@ -390,14 +434,16 @@ const ProductEditForm = ({ id, product }) => {
 
               <div className="flex flex-col gap-1.5">
                 <label className={labelClass}>Selling Price *</label>
+
                 <div className="relative">
                   <span
                     className={`absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold ${
                       dark ? "text-[#8190AA]" : "text-[#8A96AA]"
                     }`}
                   >
-                    $
+               <IndianRupee  size={13}/>
                   </span>
+
                   <input
                     type="number"
                     min="0"
@@ -414,7 +460,11 @@ const ProductEditForm = ({ id, product }) => {
             </div>
 
             {priceWarning && (
-              <p className="text-xs text-amber-500 font-medium">
+              <p
+                className={`text-xs font-medium ${
+                  dark ? "text-[#E6B66F]" : "text-[#A66A22]"
+                }`}
+              >
                 Note: Selling price is currently higher than the original price.
               </p>
             )}
@@ -428,37 +478,34 @@ const ProductEditForm = ({ id, product }) => {
                 }`}
               >
                 <span>Customer Savings per unit:</span>
-                <span className="font-bold text-[#27845B] dark:text-[#65C995]">
-                  {formatPrice.format(originalPrice - sellingPrice)} ({discountPercent}%)
+
+                <span
+                  className={`font-bold ${
+                    dark ? "text-[#65C995]" : "text-[#27845B]"
+                  }`}
+                >
+                  {formatPrice.format(originalPrice - sellingPrice)} (
+                  {discountPercent}%)
                 </span>
               </div>
             )}
           </section>
         </div>
 
-        {/* Right Column (1 Col): Organization + Inventory + Feature Switch + Real-Time Preview */}
+        {/* Right Column */}
         <div className="flex flex-col gap-6">
-          {/* Card: Organization & Classification */}
-          <section
-            className={`rounded-2xl border p-5 shadow-sm transition-colors flex flex-col gap-4 ${
-              dark
-                ? "border-[#35435C] bg-[#202A40]"
-                : "border-[#D8E1EF] bg-white"
-            }`}
-          >
-            <div className="flex items-center gap-2.5 pb-3 border-b dark:border-[#35435C] border-[#D8E1EF]">
+          {/* Organization */}
+          <section className={`${cardClass} p-5`}>
+            <div
+              className={`flex items-center gap-2.5 pb-3 border-b ${dividerClass}`}
+            >
               <Layers className="w-4 h-4 text-[#7895C5]" />
-              <h2
-                className={`text-sm sm:text-base font-bold tracking-tight ${
-                  dark ? "text-[#EAF0FA]" : "text-[#202C50]"
-                }`}
-              >
-                Organization
-              </h2>
+              <h2 className={headingClass}>Organization</h2>
             </div>
 
             <div className="flex flex-col gap-1.5">
               <label className={labelClass}>Brand Name *</label>
+
               <input
                 className={inputClass}
                 name="brandName"
@@ -471,6 +518,7 @@ const ProductEditForm = ({ id, product }) => {
 
             <div className="flex flex-col gap-1.5">
               <label className={labelClass}>Category *</label>
+
               <input
                 className={inputClass}
                 name="category"
@@ -486,15 +534,17 @@ const ProductEditForm = ({ id, product }) => {
                   <button
                     key={cat}
                     type="button"
-                    onClick={() => setForm((prev) => ({ ...prev, category: cat }))}
+                    onClick={() =>
+                      setForm((prev) => ({ ...prev, category: cat }))
+                    }
                     className={`rounded-lg px-2 py-0.5 text-[10px] font-medium border transition-colors ${
                       form.category === cat
                         ? dark
                           ? "bg-[#7895C5] text-[#171E30] border-[#7895C5]"
                           : "bg-[#202C50] text-white border-[#202C50]"
                         : dark
-                        ? "border-[#35435C] bg-[#171E30] text-[#AAB8D0] hover:text-[#EAF0FA]"
-                        : "border-[#D8E1EF] bg-[#F7F9FC] text-[#64718A] hover:text-[#202C50]"
+                        ? "border-[#35435C] bg-[#171E30] text-[#AAB8D0] hover:bg-[#26334D] hover:text-[#EAF0FA]"
+                        : "border-[#D8E1EF] bg-[#F7F9FC] text-[#64718A] hover:bg-[#DFE7F3] hover:text-[#202C50]"
                     }`}
                   >
                     {cat}
@@ -504,34 +554,30 @@ const ProductEditForm = ({ id, product }) => {
             </div>
           </section>
 
-          {/* Card: Stock & Inventory Management */}
-          <section
-            className={`rounded-2xl border p-5 shadow-sm transition-colors flex flex-col gap-4 ${
-              dark
-                ? "border-[#35435C] bg-[#202A40]"
-                : "border-[#D8E1EF] bg-white"
-            }`}
-          >
-            <div className="flex items-center justify-between pb-3 border-b dark:border-[#35435C] border-[#D8E1EF]">
+          {/* Stock & Inventory */}
+          <section className={`${cardClass} p-5`}>
+            <div
+              className={`flex items-center justify-between pb-3 border-b ${dividerClass}`}
+            >
               <div className="flex items-center gap-2.5">
                 <Tag className="w-4 h-4 text-[#7895C5]" />
-                <h2
-                  className={`text-sm sm:text-base font-bold tracking-tight ${
-                    dark ? "text-[#EAF0FA]" : "text-[#202C50]"
-                  }`}
-                >
-                  Inventory
-                </h2>
+                <h2 className={headingClass}>Inventory</h2>
               </div>
+
               {form.stock !== "" && (
-                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${stockStatus.style}`}>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${stockStatus.style}`}
+                >
                   {stockStatus.label}
                 </span>
               )}
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className={labelClass}>Available Units in Stock *</label>
+              <label className={labelClass}>
+                Available Units in Stock *
+              </label>
+
               <input
                 type="number"
                 min="0"
@@ -546,14 +592,8 @@ const ProductEditForm = ({ id, product }) => {
             </div>
           </section>
 
-          {/* Card: Featured Spotlight Toggle */}
-          <section
-            className={`rounded-2xl border p-5 shadow-sm transition-colors ${
-              dark
-                ? "border-[#35435C] bg-[#202A40]"
-                : "border-[#D8E1EF] bg-white"
-            }`}
-          >
+          {/* Featured Spotlight Toggle */}
+          <section className={`${cardClass} p-5`}>
             <label className="flex items-start gap-3 cursor-pointer select-none">
               <input
                 type="checkbox"
@@ -565,11 +605,15 @@ const ProductEditForm = ({ id, product }) => {
                     isFeatured: event.target.checked,
                   }))
                 }
-                className="mt-1 h-4 w-4 rounded accent-[#202C50] dark:accent-[#7895C5]"
+                className={`mt-1 h-4 w-4 rounded ${
+                  dark ? "accent-[#7895C5]" : "accent-[#202C50]"
+                }`}
               />
+
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <Sparkles className="w-4 h-4 text-[#E6B66F]" />
+
                   <span
                     className={`text-xs sm:text-sm font-bold ${
                       dark ? "text-[#EAF0FA]" : "text-[#202C50]"
@@ -578,6 +622,7 @@ const ProductEditForm = ({ id, product }) => {
                     Feature in Showcase
                   </span>
                 </div>
+
                 <p
                   className={`text-[11px] mt-0.5 ${
                     dark ? "text-[#8190AA]" : "text-[#64718A]"
@@ -589,26 +634,30 @@ const ProductEditForm = ({ id, product }) => {
             </label>
           </section>
 
-          {/* Card: Live Storefront Card Preview */}
-          <section
-            className={`rounded-2xl border p-5 shadow-sm transition-colors flex flex-col gap-3 ${
-              dark
-                ? "border-[#35435C] bg-[#202A40]"
-                : "border-[#D8E1EF] bg-white"
-            }`}
-          >
-            <div className="flex items-center justify-between pb-2 border-b dark:border-[#35435C] border-[#D8E1EF]">
+          {/* Live Storefront Card Preview */}
+          <section className={`${cardClass} p-5`}>
+            <div
+              className={`flex items-center justify-between pb-2 border-b ${dividerClass}`}
+            >
               <div className="flex items-center gap-2">
                 <Eye className="w-3.5 h-3.5 text-[#7895C5]" />
+
                 <span
                   className={`text-xs font-bold uppercase tracking-wider ${
-                    dark ? "text-[#8190AA]" : "text-[#8A96AA]"
+                    dark ? "text-[#8190AA]" : "text-[#64718A]"
                   }`}
                 >
                   Live Card Preview
                 </span>
               </div>
-              <span className="text-[10px] text-[#8190AA]">Storefront appearance</span>
+
+              <span
+                className={`text-[10px] ${
+                  dark ? "text-[#8190AA]" : "text-[#8A96AA]"
+                }`}
+              >
+                Storefront appearance
+              </span>
             </div>
 
             {/* Mini preview card */}
@@ -619,7 +668,11 @@ const ProductEditForm = ({ id, product }) => {
                   : "border-[#D8E1EF] bg-[#F7F9FC]"
               }`}
             >
-              <div className="relative aspect-square w-full rounded-t-2xl overflow-hidden bg-white/5 flex items-center justify-center">
+              <div
+                className={`relative aspect-square w-full rounded-t-2xl overflow-hidden flex items-center justify-center ${
+                  dark ? "bg-[#202A40]" : "bg-[#EDF2F9]"
+                }`}
+              >
                 {form.productImage ? (
                   <img
                     src={form.productImage}
@@ -633,16 +686,32 @@ const ProductEditForm = ({ id, product }) => {
                     }`}
                   >
                     <Package className="w-8 h-8 opacity-40" />
-                    <span className="text-[10px]">No Image Uploaded</span>
+                    <span className="text-[10px]">
+                      No Image Uploaded
+                    </span>
                   </div>
                 )}
+
                 {hasDiscount && (
-                  <span className="absolute top-2 left-2 rounded-md bg-[#B74747] px-1.5 py-0.5 text-[9px] font-bold text-white shadow-xs">
+                  <span
+                    className={`absolute top-2 left-2 rounded-md px-1.5 py-0.5 text-[9px] font-bold shadow-xs ${
+                      dark
+                        ? "bg-[#49313B] text-[#F08089]"
+                        : "bg-[#FCE8E9] text-[#B74747]"
+                    }`}
+                  >
                     -{discountPercent}%
                   </span>
                 )}
+
                 {form.isFeatured && (
-                  <span className="absolute top-2 right-2 rounded-md bg-[#202C50] text-white dark:bg-[#7895C5] dark:text-[#171E30] px-1.5 py-0.5 text-[9px] font-bold shadow-xs">
+                  <span
+                    className={`absolute top-2 right-2 rounded-md px-1.5 py-0.5 text-[9px] font-bold shadow-xs ${
+                      dark
+                        ? "bg-[#7895C5] text-[#171E30]"
+                        : "bg-[#202C50] text-white"
+                    }`}
+                  >
                     Featured
                   </span>
                 )}
@@ -651,11 +720,12 @@ const ProductEditForm = ({ id, product }) => {
               <div className="flex flex-col gap-0.5 p-3.5">
                 <span
                   className={`text-[10px] uppercase font-semibold tracking-wider ${
-                    dark ? "text-[#8190AA]" : "text-[#8A96AA]"
+                    dark ? "text-[#8190AA]" : "text-[#64718A]"
                   }`}
                 >
                   {form.brandName || "Brand"}
                 </span>
+
                 <p
                   className={`text-xs font-bold line-clamp-1 ${
                     dark ? "text-[#EAF0FA]" : "text-[#202C50]"
@@ -663,6 +733,7 @@ const ProductEditForm = ({ id, product }) => {
                 >
                   {form.productName || "Product Title"}
                 </p>
+
                 <div className="flex items-center gap-2 mt-1">
                   <span
                     className={`text-sm font-bold ${
@@ -671,8 +742,13 @@ const ProductEditForm = ({ id, product }) => {
                   >
                     {formatPrice.format(sellingPrice || 0)}
                   </span>
+
                   {hasDiscount && (
-                    <span className="text-[11px] text-[#8A96AA] line-through">
+                    <span
+                      className={`text-[11px] line-through ${
+                        dark ? "text-[#8190AA]" : "text-[#8A96AA]"
+                      }`}
+                    >
                       {formatPrice.format(originalPrice)}
                     </span>
                   )}
@@ -685,7 +761,11 @@ const ProductEditForm = ({ id, product }) => {
           <button
             type="submit"
             disabled={saving}
-            className="w-full rounded-xl bg-[#202C50] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#344F82] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7895C5] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#7895C5] dark:text-[#171E30] dark:hover:bg-[#9BB2D8] flex items-center justify-center gap-2 shadow-xs"
+            className={`w-full rounded-xl py-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7895C5] disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-2 shadow-xs ${
+              dark
+                ? "bg-[#7895C5] text-[#171E30] hover:bg-[#9BB2D8]"
+                : "bg-[#202C50] text-white hover:bg-[#344F82]"
+            }`}
           >
             {saving ? (
               <>
@@ -719,8 +799,19 @@ const ProductEdit = () => {
   if (productLoading) {
     return (
       <div className="p-8 max-w-6xl mx-auto flex flex-col items-center justify-center min-h-[400px] gap-3">
-        <div className="h-10 w-10 border-4 border-[#D8E1EF] border-t-[#202C50] dark:border-[#35435C] dark:border-t-[#7895C5] rounded-full animate-spin" />
-        <p className={`text-sm font-medium ${dark ? "text-[#8190AA]" : "text-[#64718A]"}`}>
+        <div
+          className={`h-10 w-10 border-4 rounded-full animate-spin ${
+            dark
+              ? "border-[#35435C] border-t-[#7895C5]"
+              : "border-[#D8E1EF] border-t-[#202C50]"
+          }`}
+        />
+
+        <p
+          className={`text-sm font-medium ${
+            dark ? "text-[#8190AA]" : "text-[#64718A]"
+          }`}
+        >
           Loading product details...
         </p>
       </div>
@@ -739,6 +830,7 @@ const ProductEdit = () => {
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Products</span>
         </Link>
+
         <div
           className={`rounded-2xl border p-12 text-center flex flex-col items-center gap-3 ${
             dark
@@ -746,14 +838,32 @@ const ProductEdit = () => {
               : "border-[#D8E1EF] bg-white text-[#202C50]"
           }`}
         >
-          <AlertCircle className="w-10 h-10 text-[#C04452] dark:text-[#F08089]" />
-          <h2 className="text-xl font-bold">Could not load product</h2>
-          <p className={`text-sm ${dark ? "text-[#8190AA]" : "text-[#64718A]"}`}>
-            {productError?.data?.message || "Product not found or has been removed."}
+          <AlertCircle
+            className={`w-10 h-10 ${
+              dark ? "text-[#F08089]" : "text-[#B74747]"
+            }`}
+          />
+
+          <h2 className="text-xl font-bold">
+            Could not load product
+          </h2>
+
+          <p
+            className={`text-sm ${
+              dark ? "text-[#8190AA]" : "text-[#64718A]"
+            }`}
+          >
+            {productError?.data?.message ||
+              "Product not found or has been removed."}
           </p>
+
           <Link
             to="/dashboard/products"
-            className="mt-2 rounded-xl bg-[#202C50] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#344F82] dark:bg-[#7895C5] dark:text-[#171E30] dark:hover:bg-[#9BB2D8] transition-colors"
+            className={`mt-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors ${
+              dark
+                ? "bg-[#7895C5] text-[#171E30] hover:bg-[#9BB2D8]"
+                : "bg-[#202C50] text-white hover:bg-[#344F82]"
+            }`}
           >
             Return to Products
           </Link>
@@ -762,7 +872,13 @@ const ProductEdit = () => {
     );
   }
 
-  return <ProductEditForm key={id} id={id} product={product} />;
+  return (
+    <ProductEditForm
+      key={id}
+      id={id}
+      product={product}
+    />
+  );
 };
 
 export default ProductEdit;
