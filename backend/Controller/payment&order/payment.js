@@ -98,18 +98,36 @@ const payment = async (req, res) => {
         : typeof product.productImage === "string" && product.productImage
           ? [product.productImage]
           : [];
+
       const validImages = rawImages
-        .filter((image) => typeof image === "string" && image.startsWith("https://"))
+        .map((img) => (typeof img === "string" ? img.trim() : ""))
+        .filter((img) => {
+          if (!img || img.length > 2000) return false;
+          try {
+            const parsedImg = new URL(img);
+            return (
+              (parsedImg.protocol === "https:" || parsedImg.protocol === "http:") &&
+              !parsedImg.host.includes("localhost")
+            );
+          } catch {
+            return false;
+          }
+        })
         .slice(0, 8);
+
+      const productData = {
+        name: product.productName,
+        metadata: { id: String(product._id) },
+      };
+
+      if (validImages.length > 0) {
+        productData.images = validImages;
+      }
 
       return {
         price_data: {
           currency: "inr",
-          product_data: {
-            name: product.productName,
-            images: validImages,
-            metadata: { id: String(product._id) },
-          },
+          product_data: productData,
           unit_amount: Math.round(price * 100),
         },
         quantity,
@@ -121,9 +139,26 @@ const payment = async (req, res) => {
       throw new Error("Shipping amount configuration is invalid.");
     }
 
-    const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:5173")
-      .trim()
-      .replace(/\/$/, "");
+    // Determine the client frontend origin reliably
+    let rawOrigin =
+      req.headers?.origin ||
+      (req.headers?.referer ? new URL(req.headers.referer).origin : null) ||
+      (process.env.FRONTEND_URL || "").split(",")[0].trim() ||
+      "https://nova-ecommerce-liard-xi.vercel.app";
+
+    rawOrigin = rawOrigin.replace(/["']/g, "").trim().replace(/\/$/, "");
+
+    if (!rawOrigin.startsWith("http://") && !rawOrigin.startsWith("https://")) {
+      rawOrigin = "https://" + rawOrigin;
+    }
+
+    let safeFrontendUrl;
+    try {
+      const parsed = new URL(rawOrigin);
+      safeFrontendUrl = parsed.origin;
+    } catch {
+      safeFrontendUrl = "https://nova-ecommerce-liard-xi.vercel.app";
+    }
 
     const params = {
       submit_type: "pay",
@@ -151,8 +186,8 @@ const payment = async (req, res) => {
         checkoutType: isBuyNow ? "buy_now" : "cart",
       },
       line_items: lineItems,
-      success_url: frontendUrl + "/success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: frontendUrl + "/cancel",
+      success_url: `${safeFrontendUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${safeFrontendUrl}/cancel`,
     };
 
     const session = await stripe.checkout.sessions.create(params);
@@ -163,6 +198,7 @@ const payment = async (req, res) => {
       success: true,
     });
   } catch (error) {
+    console.error("Stripe checkout error:", error?.message || error);
     return res.status(400).json({
       message: error.message || "Could not start checkout.",
       success: false,
