@@ -12,7 +12,7 @@ import {
   useSubmitProductReviewMutation,
 } from "../../services/productsApi";
 import { UseGlob } from "../../Context/GlobalContext";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Heart,
   ShoppingCart,
@@ -28,6 +28,7 @@ import {
   Share2,
   AlertCircle,
   Package,
+  ZoomIn,
 } from "lucide-react";
 import usePageTitle from "../../hooks/usePageTitle";
 
@@ -88,6 +89,65 @@ const ProductDetails = () => {
   const [reviewMessage, setReviewMessage] = useState("");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [copiedLink, setCopiedLink] = useState(false);
+
+  // Amazon-style Side Zoom State
+  const [isZooming, setIsZooming] = useState(false);
+  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+  const [lensPosition, setLensPosition] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
+  const imageContainerRef = useRef(null);
+
+  const handleMouseMove = (e) => {
+    if (!imageContainerRef.current) return;
+    const rect = imageContainerRef.current.getBoundingClientRect();
+
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    if (mouseX < 0 || mouseX > rect.width || mouseY < 0 || mouseY > rect.height) {
+      setIsZooming(false);
+      return;
+    }
+
+    // Lens is 35% of the container size for a 2.85x magnification
+    const lensWidth = rect.width * 0.35;
+    const lensHeight = rect.height * 0.35;
+
+    let lensX = mouseX - lensWidth / 2;
+    let lensY = mouseY - lensHeight / 2;
+
+    if (lensX < 0) lensX = 0;
+    if (lensY < 0) lensY = 0;
+    if (lensX + lensWidth > rect.width) lensX = rect.width - lensWidth;
+    if (lensY + lensHeight > rect.height) lensY = rect.height - lensHeight;
+
+    const percentX = (lensX / (rect.width - lensWidth)) * 100;
+    const percentY = (lensY / (rect.height - lensHeight)) * 100;
+
+    setLensPosition({
+      x: lensX,
+      y: lensY,
+      width: lensWidth,
+      height: lensHeight,
+    });
+
+    setZoomPosition({
+      x: Math.max(0, Math.min(100, percentX)),
+      y: Math.max(0, Math.min(100, percentY)),
+    });
+  };
+
+  const handleMouseEnter = () => {
+    setIsZooming(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsZooming(false);
+  };
 
   // Theme colors
   const pageBg = dark ? "bg-[#171E30]" : "bg-[#F7F9FC]";
@@ -377,15 +437,21 @@ const ProductDetails = () => {
         </nav>
 
         {/* Main Product Section */}
-        <div className="grid gap-8 lg:grid-cols-12 items-start">
+        <div className="grid gap-8 lg:grid-cols-12 items-start relative">
 
           {/* Product Gallery */}
-          <div className="lg:col-span-7 flex flex-col gap-4">
+          <div className="lg:col-span-7 flex flex-col gap-4 relative">
             <div
-              className={`relative aspect-square w-full rounded-3xl border overflow-hidden flex items-center justify-center p-5 sm:p-10 group ${cardBg} ${borderColor}`}
+              ref={imageContainerRef}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              onMouseMove={handleMouseMove}
+              className={`relative aspect-square w-full rounded-3xl border overflow-hidden flex items-center justify-center p-5 sm:p-10 ${
+                activeImage ? "cursor-crosshair" : ""
+              } ${cardBg} ${borderColor}`}
             >
               {/* Product Badges */}
-              <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+              <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
                 {discountPercent > 0 && (
                   <span
                     className={`rounded-full px-3 py-1 text-xs font-extrabold uppercase tracking-wider shadow-sm ${
@@ -415,7 +481,7 @@ const ProductDetails = () => {
                 aria-label={
                   isWishlisted ? "Remove from wishlist" : "Add to wishlist"
                 }
-                className={`absolute top-4 right-4 z-10 w-11 h-11 rounded-full border flex items-center justify-center transition-all duration-200 shadow-sm active:scale-90 disabled:opacity-50 ${secondaryButton}`}
+                className={`absolute top-4 right-4 z-20 w-11 h-11 rounded-full border flex items-center justify-center transition-all duration-200 shadow-sm active:scale-90 disabled:opacity-50 ${secondaryButton}`}
               >
                 <Heart
                   className={`w-5 h-5 transition-transform ${
@@ -431,7 +497,7 @@ const ProductDetails = () => {
                 <img
                   src={activeImage}
                   alt={product.productName}
-                  className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                  className="h-full w-full object-contain pointer-events-none select-none transition-transform duration-200"
                 />
               ) : (
                 <div className={`flex flex-col items-center justify-center text-sm ${textSecondary}`}>
@@ -439,7 +505,59 @@ const ProductDetails = () => {
                   <span>No image available</span>
                 </div>
               )}
+
+              {/* Amazon Lens Overlay (Desktop Only) */}
+              {isZooming && activeImage && (
+                <div
+                  className={`hidden lg:block absolute pointer-events-none rounded-xl border ${
+                    dark
+                      ? "border-[#7895C5]/70 bg-[#7895C5]/20 backdrop-blur-[1px]"
+                      : "border-[#344F82]/60 bg-[#344F82]/15 backdrop-blur-[1px]"
+                  }`}
+                  style={{
+                    left: `${lensPosition.x}px`,
+                    top: `${lensPosition.y}px`,
+                    width: `${lensPosition.width}px`,
+                    height: `${lensPosition.height}px`,
+                  }}
+                />
+              )}
             </div>
+
+            {/* Hint below image */}
+            {activeImage && (
+              <div className="hidden lg:flex items-center justify-center gap-1.5 text-xs text-[#8190AA]">
+                <ZoomIn size={14} className={accentText} />
+                <span>Roll over image to zoom in</span>
+              </div>
+            )}
+
+            {/* Amazon-style Floating Side Zoom Window (Desktop Only) */}
+            {isZooming && activeImage && (
+              <div
+                className={`hidden lg:block absolute left-[calc(100%+24px)] top-0 z-50 w-[calc((5/7)*100%)] aspect-square rounded-3xl border shadow-2xl overflow-hidden pointer-events-none ${cardBg} ${borderColor}`}
+                style={{
+                  backgroundImage: `url(${activeImage})`,
+                  backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                  backgroundSize: "285% 285%",
+                  backgroundRepeat: "no-repeat",
+                }}
+              >
+                {/* Floating pill badge */}
+                <div className="absolute top-4 left-4 z-10">
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider shadow-sm border backdrop-blur-md ${
+                      dark
+                        ? "bg-[#171E30]/85 border-[#35435C] text-[#7895C5]"
+                        : "bg-white/95 border-[#D8E1EF] text-[#344F82]"
+                    }`}
+                  >
+                    <ZoomIn size={12} />
+                    <span>Zoom Preview</span>
+                  </span>
+                </div>
+              </div>
+            )}
 
             {/* Image Thumbnails */}
             {images.length > 1 && (
@@ -449,6 +567,7 @@ const ProductDetails = () => {
                     key={idx}
                     type="button"
                     onClick={() => setSelectedImageIndex(idx)}
+                    onMouseEnter={() => setSelectedImageIndex(idx)}
                     aria-label={`View product image ${idx + 1}`}
                     className={`relative w-20 h-20 rounded-2xl border p-2 shrink-0 transition-all overflow-hidden ${
                       selectedImageIndex === idx
@@ -599,7 +718,7 @@ const ProductDetails = () => {
 
 {/* Responsive Purchase Actions */}
 <div
-  className={`fixed bottom-0 left-0 right-0 z-50 flex items-center gap-3 border-t p-3 shadow-[0_-6px_20px_rgba(0,0,0,0.08)] backdrop-blur-md
+  className={`fixed bottom-0 left-0 right-0  flex items-center gap-3 border-t p-3 shadow-[0_-6px_20px_rgba(0,0,0,0.08)] backdrop-blur-md
     lg:static lg:flex-col lg:items-stretch lg:gap-3 lg:border-0 lg:p-0 lg:shadow-none lg:backdrop-blur-none
     ${
       dark
