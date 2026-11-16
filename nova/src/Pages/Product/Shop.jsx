@@ -121,7 +121,7 @@ const Shop = () => {
   };
 
   // Error State
-  if (isError && !productsResponse) {
+  if (isError && !isFetching && !productsResponse) {
     return (
       <main
         className={`min-h-[60vh] flex flex-col items-center justify-center gap-4 px-6 py-20 text-center ${pageBg}`}
@@ -321,7 +321,7 @@ const Shop = () => {
         )}
 
         {/* Product Grid / Loading / Empty States */}
-        {isLoading && !productsResponse ? (
+        {isLoading || isFetching || !productsResponse ? (
           <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 sm:gap-5 lg:gap-6">
             {Array.from({ length: PAGE_SIZE }, (_, index) => (
               <ProductCardSkeleton key={index} />
@@ -363,26 +363,15 @@ const Shop = () => {
             </button>
           </section>
         ) : (
-          <div className="relative">
-            {/* Fetching Indicator */}
-            {isFetching && (
-              <div
-                className={`absolute inset-0 z-10 rounded-2xl backdrop-blur-[1px] pointer-events-none transition-opacity ${
-                  dark ? "bg-[#171E30]/40" : "bg-white/50"
-                }`}
-              />
-            )}
-
-            <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 sm:gap-5 lg:gap-6">
-              {products.map((product) => (
-                <ProductCard key={product._id} product={product} />
-              ))}
-            </section>
-          </div>
+          <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 sm:gap-5 lg:gap-6">
+            {products.map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+          </section>
         )}
 
         {/* Pagination */}
-        {pagination?.totalPages > 1 && (
+        {!isLoading && !isFetching && pagination?.totalPages > 1 && (
           <nav
             aria-label="Product pages"
             className={`mt-5 sm:mt-8 flex flex-col sm:flex-row items-center justify-between gap-5 border-t pt-6 ${borderColor}`}
