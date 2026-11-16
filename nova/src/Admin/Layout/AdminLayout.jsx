@@ -217,7 +217,7 @@ const AdminLayout = () => {
           </div>
 
           <Link
-            to="/"
+            to="/shop"
             className={`ml-2 flex shrink-0 items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors ${
               dark
                 ? "border-[#35435C] bg-[#171E30] text-[#EAF0FA] hover:bg-[#2D3B56]"
@@ -394,7 +394,7 @@ const AdminLayout = () => {
                 </NavLink>
 
                 <Link
-                  to="/"
+                  to="/shop"
                   className={`group flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors ${
                     dark
                       ? "text-[#AAB8D0] hover:bg-[#2D3B56] hover:text-[#EAF0FA]"
