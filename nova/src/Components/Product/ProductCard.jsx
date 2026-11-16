@@ -137,10 +137,10 @@ function ProductCard({ product }) {
             </div>
           )}
 
-          {/* Category Badge */}
+          {/* Category Badge (Top Left) */}
           {product.category && (
             <span
-              className={`absolute left-2 top-2 max-w-[55%] truncate rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-tight shadow-sm backdrop-blur-md sm:left-3 sm:top-3 sm:text-[11px] ${
+              className={`absolute left-2 top-2 max-w-[45%] truncate rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-tight shadow-sm backdrop-blur-md sm:left-3 sm:top-3 sm:text-[11px] ${
                 dark
                   ? "border-[#35435C] bg-[#202A40]/90 text-[#EAF0FA]"
                   : "border-[#D8E1EF] bg-white/90 text-[#202C50]"
@@ -153,7 +153,7 @@ function ProductCard({ product }) {
           {/* Discount Badge (Top Right) */}
           {discountPercent > 0 && (
             <span
-              className={`absolute left-2 bottom-2 z-10 rounded-full border px-2 py-0.5 text-[10px] font-black tracking-tight sm:right-3 sm:top-3 sm:text-[11px] ${discountBadge}`}
+              className={`absolute right-2 top-2 z-10 rounded-full border px-2 py-0.5 text-[10px] font-black tracking-tight sm:right-3 sm:top-3 sm:text-[11px] ${discountBadge}`}
             >
               {discountPercent}% OFF
             </span>

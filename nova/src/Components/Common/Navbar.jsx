@@ -318,7 +318,7 @@ const Navbar = () => {
                   >
                     <User size={16} />
                     <span>Login</span>
-                    <ChevronDown size={14} />
+              
                   </Link>
                 )}
               </div>
