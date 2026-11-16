@@ -635,11 +635,7 @@ const AdminProducts = () => {
                                 {product.brandName || "Generic"}
                               </span>
 
-                              <span>·</span>
-
-                              <span className="font-mono text-[11px] opacity-75">
-                                #{product._id.slice(-6)}
-                              </span>
+                            
                             </div>
                           </div>
                         </div>

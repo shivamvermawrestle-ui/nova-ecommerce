@@ -599,7 +599,7 @@ if (isLoading && orders.length === 0) {
 
                       <td className="p-3.5">
                         <span
-                          className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
+                          className={`inline-block px-2.5 py-0.5  text-nowrap rounded-full text-[11px] font-semibold ${
                             order.paymentDetails?.payment_status === "paid" ||
                             order.paymentDetails?.payment_status === "SUCCESS"
                               ? "bg-[#27845B]/10 text-[#27845B] dark:bg-[#65C995]/10 dark:text-[#65C995]"
