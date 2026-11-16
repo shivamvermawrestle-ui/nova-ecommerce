@@ -207,15 +207,18 @@ export const productsApi = createApi({
         url: "/logout",
         method: "GET",
       }),
-      async onQueryStarted(_arg, { queryFulfilled }) {
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
+        } catch {
+          // ignore network failure
         } finally {
           if (typeof window !== "undefined") {
             localStorage.removeItem("nova_token");
             localStorage.removeItem("nova_user");
             localStorage.removeItem("token");
           }
+          dispatch(productsApi.util.resetApiState());
         }
       },
       invalidatesTags: ["Users", "Cart", "CartCount", "Orders", "Wishlist"],

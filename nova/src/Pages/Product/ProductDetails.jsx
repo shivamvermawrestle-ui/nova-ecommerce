@@ -59,9 +59,11 @@ const ProductDetails = () => {
 
   const { data: user, isLoading: isCheckingUser } = useGetCurrentUserQuery();
 
-  const { data: wishlist = [] } = useGetWishlistQuery(undefined, {
+  const { data: rawWishlist = [] } = useGetWishlistQuery(undefined, {
     skip: !user,
   });
+
+  const wishlist = user && Array.isArray(rawWishlist) ? rawWishlist : [];
 
   const [addWishlistProduct, { isLoading: isAddingWishlist }] =
     useAddWishlistProductMutation();

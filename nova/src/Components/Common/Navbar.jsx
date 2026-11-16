@@ -40,17 +40,20 @@ const Navbar = () => {
   const [logout, { isLoading: isLogginOut, error: logoutError }] =
     useLogoutMutation();
 
-  const { data: cartCount = 0 } = useGetCartCountQuery(undefined, {
+  const { data: rawCartCount = 0 } = useGetCartCountQuery(undefined, {
     skip: !user,
   });
 
-  const { data: wishlist = [] } = useGetWishlistQuery(undefined, {
+  const { data: rawWishlist = [] } = useGetWishlistQuery(undefined, {
     skip: !user,
   });
 
-  const wishlistCount = wishlist.filter(
-    (item) => item.productId
-  ).length;
+  // Only display badge counts when an active user is logged in
+  const cartCount = user ? (rawCartCount || 0) : 0;
+  const wishlistCount =
+    user && Array.isArray(rawWishlist)
+      ? rawWishlist.filter((item) => item?.productId).length
+      : 0;
 
   const closeMenu = () => {
     setMenuOpen(false);
@@ -60,11 +63,17 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await logout().unwrap();
+    } catch {
+      // handled by RTK error state
+    } finally {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("nova_token");
+        localStorage.removeItem("nova_user");
+        localStorage.removeItem("token");
+      }
       dispatch(productsApi.util.resetApiState());
       closeMenu();
       navigate("/");
-    } catch {
-      // handled by RTK error state
     }
   };
 

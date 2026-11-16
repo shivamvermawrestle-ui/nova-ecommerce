@@ -46,12 +46,16 @@ const AdminLayout = () => {
   const handleLogout = async () => {
     try {
       await logout().unwrap();
-
-      dispatch(productsApi.util.resetApiState());
-
-      navigate("/login");
     } catch (err) {
       console.error("Admin logout failed:", err);
+    } finally {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("nova_token");
+        localStorage.removeItem("nova_user");
+        localStorage.removeItem("token");
+      }
+      dispatch(productsApi.util.resetApiState());
+      navigate("/login");
     }
   };
 
