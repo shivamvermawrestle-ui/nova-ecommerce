@@ -18,6 +18,7 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [sendEmail, { isLoading }] = useSendResetEmailMutation();
   const [message, setMessage] = useState("");
+  const [resetLink, setResetLink] = useState("");
   const [error, setError] = useState("");
 
   // Theme colors consistent with Login & Signup
@@ -49,14 +50,18 @@ const ForgotPassword = () => {
     e.preventDefault();
     setMessage("");
     setError("");
+    setResetLink("");
     try {
       const res = await sendEmail({
         email: email.trim().toLowerCase(),
       }).unwrap();
       setMessage(
         res?.message ||
-          "Password reset link sent! Please check your email inbox or spam folder."
+          "Password reset link generated! Please check below or your email inbox."
       );
+      if (res?.resetLink) {
+        setResetLink(res.resetLink);
+      }
     } catch (err) {
       setError(
         err?.data?.message ||
@@ -101,10 +106,31 @@ const ForgotPassword = () => {
           {/* Success Banner */}
           {message && (
             <div
-              className={`mb-5 flex items-start gap-2.5 rounded-xl border p-3.5 text-xs font-medium leading-relaxed ${successBanner}`}
+              className={`mb-5 flex flex-col gap-2.5 rounded-xl border p-3.5 text-xs font-medium leading-relaxed ${successBanner}`}
             >
-              <CheckCircle2 size={16} className="mt-0.5 shrink-0" />
-              <span>{message}</span>
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 size={16} className="mt-0.5 shrink-0" />
+                <span>{message}</span>
+              </div>
+
+              {resetLink && (
+                <div className="mt-1 flex flex-col gap-2 border-t border-emerald-500/20 pt-2.5">
+                  <span className="text-[11px] font-semibold opacity-90">
+                    Direct access to reset your password:
+                  </span>
+                  <a
+                    href={resetLink}
+                    className={`inline-flex items-center justify-center gap-1.5 rounded-lg py-2 px-3 text-xs font-bold shadow-sm transition-all duration-200 active:scale-[0.98] ${
+                      dark
+                        ? "bg-[#7895C5] text-[#171E30] hover:bg-[#9BB2D8]"
+                        : "bg-[#202C50] text-white hover:bg-[#344F82]"
+                    }`}
+                  >
+                    <span>Proceed to Reset Password</span>
+                    <ArrowRight size={14} />
+                  </a>
+                </div>
+              )}
             </div>
           )}
 
