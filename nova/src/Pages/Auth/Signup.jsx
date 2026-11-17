@@ -12,6 +12,7 @@ import {
   ArrowRight,
   ShieldCheck,
   Zap,
+  Camera,
 } from "lucide-react";
 
 const Signup = () => {
@@ -194,28 +195,86 @@ const Signup = () => {
               {/* Registration Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Profile picture  */}
-                <div className="flex flex-col items-center gap-2 ">
-                  <div className="h-20 w-20 border-2 border-dashed border-gray-300 rounded-full overflow-hidden flex items-center justify-center bg-gray-50 relative">
-                    {signupData.profilePic ? (
-                      <img
-                        src={signupData.profilePic}
-                        alt="preview"
-                        className="h-full w-full
-     object-cover"
-                      />
-                    ) : (
-                      <span className="text-xs text-gray-500 font-medium">
-                        Add Photo
-                      </span>
-                    )}
-                  </div>
+                <div className="flex flex-col items-center gap-2.5">
+                  <label
+                    htmlFor="profilePicInput"
+                    className="group relative cursor-pointer"
+                  >
+                    <div
+                      className={`relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-2 border-dashed transition-all duration-200 ${
+                        dark
+                          ? "border-[#465570] bg-[#171E30] group-hover:border-[#7895C5]"
+                          : "border-[#D8E1EF] bg-[#F7F9FC] group-hover:border-[#344F82]"
+                      }`}
+                    >
+                      {signupData.profilePic ? (
+                        <img
+                          src={signupData.profilePic}
+                          alt="preview"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center p-1 text-center">
+                          <Camera
+                            size={20}
+                            className={`transition-colors duration-200 ${
+                              dark
+                                ? "text-[#8190AA] group-hover:text-[#7895C5]"
+                                : "text-[#8A96AA] group-hover:text-[#344F82]"
+                            }`}
+                          />
+                          <span
+                            className={`mt-0.5 text-[10px] font-semibold transition-colors duration-200 ${
+                              dark
+                                ? "text-[#AAB8D0] group-hover:text-[#EAF0FA]"
+                                : "text-[#64718A] group-hover:text-[#202C50]"
+                            }`}
+                          >
+                            Add Photo
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div
+                      className={`absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full border-2 shadow-sm transition-all duration-200 group-hover:scale-110 ${
+                        dark
+                          ? "border-[#202A40] bg-[#7895C5] text-[#171E30]"
+                          : "border-white bg-[#202C50] text-white"
+                      }`}
+                    >
+                      <Camera size={11} />
+                    </div>
+                  </label>
 
                   <input
+                    id="profilePicInput"
                     type="file"
                     onChange={handleImageChange}
                     accept="image/*"
-                    className="text-xs text-gray-600 file:mr-2 file:py-1 file:px-3 file:rounded-md file:bg-gray-200 cursor-pointer"
+                    className="hidden"
                   />
+
+                  {signupData.profilePic && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSignupData((prev) => ({
+                          ...prev,
+                          profilePic: "",
+                        }));
+                        const fileInput = document.getElementById("profilePicInput");
+                        if (fileInput) fileInput.value = "";
+                      }}
+                      className={`text-[11px] font-semibold transition-colors hover:underline ${
+                        dark
+                          ? "text-[#F08089] hover:text-[#FFA2A9]"
+                          : "text-[#C04452] hover:text-[#9A2D3A]"
+                      }`}
+                    >
+                      Remove photo
+                    </button>
+                  )}
                 </div>
 
                 {/* Full Name Input */}
