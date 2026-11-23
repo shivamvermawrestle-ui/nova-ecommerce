@@ -10,7 +10,9 @@ const getProductReviews=async (req,res) => {
         })
     }
    try{
-    const reviews= (await ProductReviewModel.find({productId}).populate("userId","name profilePic")).sort({createdAt:-1})
+    const reviews = await ProductReviewModel.find({ productId })
+      .populate("userId", "name profilePic")
+      .sort({ createdAt: -1 });
 
     const totalReviews=reviews.length
     const averageRating=totalReviews ===0 ?0 :Number((reviews.reduce((total,review)=>total+review.rating,0)/totalReviews).toFixed(1))
