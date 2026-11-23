@@ -69,15 +69,15 @@ function ProductCard({ product }) {
 
   const wishlistButton = isWishlisted
     ? dark
-      ? "border-[#F08089]/40 bg-[#F08089]/20 text-[#F08089] backdrop-blur-md"
-      : "border-[#C04452]/40 bg-[#C04452]/15 text-[#C04452] backdrop-blur-md"
+      ? "border-[#F08089]/40 bg-[#F08089]/25 text-[#F08089] sm:backdrop-blur-md"
+      : "border-[#C04452]/40 bg-[#C04452]/15 text-[#C04452] sm:backdrop-blur-md"
     : dark
-      ? "border-[#35435C] bg-[#171E30]/85 text-[#8190AA] hover:text-[#F08089] hover:border-[#F08089]/40 backdrop-blur-md"
-      : "border-[#D8E1EF] bg-white/90 text-[#64718A] hover:text-[#C04452] hover:border-[#C04452]/40 backdrop-blur-md";
+      ? "border-[#35435C] bg-[#171E30]/95 text-[#8190AA] hover:text-[#F08089] hover:border-[#F08089]/40 sm:backdrop-blur-md"
+      : "border-[#D8E1EF] bg-white/95 text-[#64718A] hover:text-[#C04452] hover:border-[#C04452]/40 sm:backdrop-blur-md";
 
   const discountBadge = dark
-    ? "border-[#F08080]/40 bg-[#171E30]/90 text-[#F08080] shadow-sm backdrop-blur-md"
-    : "border-[#B74747]/30 bg-white/95 text-[#B74747] shadow-sm backdrop-blur-md";
+    ? "border-[#F08080]/40 bg-[#171E30]/95 text-[#F08080] shadow-sm sm:backdrop-blur-md"
+    : "border-[#B74747]/30 bg-white/95 text-[#B74747] shadow-sm sm:backdrop-blur-md";
 
   const handleWishlistClick = async (event) => {
     event.preventDefault();
@@ -125,6 +125,7 @@ function ProductCard({ product }) {
               src={image}
               alt={product.productName}
               loading="lazy"
+              decoding="async"
               className={`h-full w-full rounded-t-2xl object-cover transition-transform duration-500 ease-out group-hover:scale-105 ${
                 stock === 0 ? "opacity-60 grayscale" : ""
               }`}
@@ -140,10 +141,10 @@ function ProductCard({ product }) {
           {/* Category Badge (Top Left) */}
           {product.category && (
             <span
-              className={`absolute left-2 top-2 max-w-[45%] truncate rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-tight shadow-sm backdrop-blur-md sm:left-3 sm:top-3 sm:text-[11px] ${
+              className={`absolute left-2 top-2 max-w-[45%] truncate rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-tight shadow-sm sm:backdrop-blur-md sm:left-3 sm:top-3 sm:text-[11px] ${
                 dark
-                  ? "border-[#35435C] bg-[#202A40]/90 text-[#EAF0FA]"
-                  : "border-[#D8E1EF] bg-white/90 text-[#202C50]"
+                  ? "border-[#35435C] bg-[#202A40]/95 text-[#EAF0FA]"
+                  : "border-[#D8E1EF] bg-white/95 text-[#202C50]"
               }`}
             >
               {product.category}

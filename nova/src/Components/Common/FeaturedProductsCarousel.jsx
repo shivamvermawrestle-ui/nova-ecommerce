@@ -188,6 +188,8 @@ const FeaturedProductsCarousel = () => {
             className="overflow-hidden"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
+            onTouchStart={() => setIsPaused(true)}
+            onTouchEnd={() => setIsPaused(false)}
           >
             <div
               className="flex transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"

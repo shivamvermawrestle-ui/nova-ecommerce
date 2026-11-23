@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NavLink, Outlet, useLocation, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -95,8 +94,8 @@ const AdminLayout = () => {
           ? "bg-[#7895C5] text-[#171E30] font-semibold shadow-sm"
           : "bg-[#202C50] text-white font-semibold shadow-sm"
         : dark
-        ? "text-[#AAB8D0] hover:bg-[#2D3B56] hover:text-[#EAF0FA]"
-        : "text-[#64718A] hover:bg-[#EDF2F9] hover:text-[#202C50]"
+          ? "text-[#AAB8D0] hover:bg-[#2D3B56] hover:text-[#EAF0FA]"
+          : "text-[#64718A] hover:bg-[#EDF2F9] hover:text-[#202C50]"
     }`;
 
   // Navigation icon styling
@@ -107,8 +106,8 @@ const AdminLayout = () => {
           ? "text-[#171E30]"
           : "text-[#7895C5]"
         : dark
-        ? "text-[#8190AA] group-hover:text-[#EAF0FA]"
-        : "text-[#8A96AA] group-hover:text-[#202C50]"
+          ? "text-[#8190AA] group-hover:text-[#EAF0FA]"
+          : "text-[#8A96AA] group-hover:text-[#202C50]"
     }`;
 
   // Current page title
@@ -117,10 +116,7 @@ const AdminLayout = () => {
 
     if (path === "/dashboard") return "Overview";
 
-    if (
-      path.startsWith("/dashboard/products") &&
-      path.includes("/edit")
-    ) {
+    if (path.startsWith("/dashboard/products") && path.includes("/edit")) {
       return "Edit Product";
     }
 
@@ -130,10 +126,7 @@ const AdminLayout = () => {
 
     if (path === "/dashboard/users") return "User Management";
 
-    if (
-      path.startsWith("/dashboard/orders/") &&
-      path !== "/dashboard/orders"
-    ) {
+    if (path.startsWith("/dashboard/orders/") && path !== "/dashboard/orders") {
       return "Order Details";
     }
 
@@ -148,12 +141,7 @@ const AdminLayout = () => {
       const Icon = item.icon;
 
       return (
-        <NavLink
-          key={item.to}
-          to={item.to}
-          end={item.end}
-          className={navClass}
-        >
+        <NavLink key={item.to} to={item.to} end={item.end} className={navClass}>
           {({ isActive }) => (
             <>
               <Icon className={navIconClass(isActive)} />
@@ -168,15 +156,14 @@ const AdminLayout = () => {
   const userInitial = user?.name?.charAt(0)?.toUpperCase() || "A";
 
   return (
-    <div className={`min-h-[calc(100vh-5rem)]  transition-colors ${dark?"bg-[#171E30] dark:text-[#EAF0FA] ":"bg-[#F7F9FC] text-[#202C50]"}`}>
+    <div
+      className={`min-h-[calc(100vh-5rem)]  transition-colors ${dark ? "bg-[#171E30] dark:text-[#EAF0FA] " : "bg-[#F7F9FC] text-[#202C50]"}`}
+    >
       <div className="mx-auto flex max-w-7xl flex-col gap-5 px-3 py-4 sm:gap-6 sm:px-6 sm:py-6 lg:flex-row">
-
         {/* Mobile Header */}
         <div
           className={`flex items-center justify-between rounded-2xl border p-3 shadow-sm transition-colors sm:p-4 lg:hidden ${
-            dark
-              ? "border-[#35435C] bg-[#202A40]"
-              : "border-[#D8E1EF] bg-white"
+            dark ? "border-[#35435C] bg-[#202A40]" : "border-[#D8E1EF] bg-white"
           }`}
         >
           <div className="flex min-w-0 items-center gap-3">
@@ -249,10 +236,7 @@ const AdminLayout = () => {
             <nav className="flex flex-col gap-1">
               {renderNavItems()}
 
-              <NavLink
-                to="/dashboard/add-product"
-                className={navClass}
-              >
+              <NavLink to="/dashboard/add-product" className={navClass}>
                 {({ isActive }) => (
                   <>
                     <PlusCircle className={navIconClass(isActive)} />
@@ -317,7 +301,6 @@ const AdminLayout = () => {
           }`}
         >
           <div className="flex flex-col gap-7">
-
             {/* Admin Header */}
             <div
               className={`flex items-center justify-between border-b pb-5 ${
@@ -365,9 +348,7 @@ const AdminLayout = () => {
                 Main Menu
               </p>
 
-              <nav className="flex flex-col gap-1">
-                {renderNavItems()}
-              </nav>
+              <nav className="flex flex-col gap-1">{renderNavItems()}</nav>
             </div>
 
             {/* Quick Actions */}
@@ -381,10 +362,7 @@ const AdminLayout = () => {
               </p>
 
               <nav className="flex flex-col gap-1">
-                <NavLink
-                  to="/dashboard/add-product"
-                  className={navClass}
-                >
+                <NavLink to="/dashboard/add-product" className={navClass}>
                   {({ isActive }) => (
                     <>
                       <PlusCircle className={navIconClass(isActive)} />
@@ -467,9 +445,7 @@ const AdminLayout = () => {
         {/* Main Content Area */}
         <section
           className={`flex min-h-[60vh] min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border shadow-sm transition-colors ${
-            dark
-              ? "border-[#35435C] bg-[#202A40]"
-              : "border-[#D8E1EF] bg-white"
+            dark ? "border-[#35435C] bg-[#202A40]" : "border-[#D8E1EF] bg-white"
           }`}
         >
           {/* Top Context & Breadcrumb Bar */}

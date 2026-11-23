@@ -9,70 +9,70 @@ const slides = [
     eyebrow: "MADE FOR EVERYDAY",
     title: "Thoughtful pieces for a warmer home.",
     description: "Explore useful favourites for your home and daily life.",
-    image: "https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?auto=format&fit=crop&w=1400&q=85",
+    image: "https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?auto=format&fit=crop&w=800&q=75",
     alt: "Warm modern living room",
   },
   {
     eyebrow: "THE EVERYDAY COLLECTION",
     title: "Small details. Better days.",
     description: "Find simple pieces that make daily routines feel special.",
-    image: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1400&q=85",
+    image: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=75",
     alt: "Comfortable contemporary home",
   },
   {
     eyebrow: "FIND YOUR FAVOURITES",
     title: "Make room for things you love.",
     description: "Browse the latest pieces selected for your everyday life.",
-    image: "https://images.unsplash.com/photo-1616486029423-aaa4789e8c9a?auto=format&fit=crop&w=1400&q=85",
+    image: "https://images.unsplash.com/photo-1616486029423-aaa4789e8c9a?auto=format&fit=crop&w=800&q=75",
     alt: "Bright, thoughtfully decorated interior",
   },
   {
     eyebrow: "SLOW MORNINGS",
     title: "Start every day at your own pace.",
     description: "Discover essentials designed to bring calm to your morning routine.",
-    image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1400&q=85",
+    image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=75",
     alt: "Sunlit minimalist bedroom with soft linens",
   },
   {
     eyebrow: "NATURAL TEXTURES",
     title: "Crafted for comfort and longevity.",
     description: "Bring warmth indoors with organic materials and timeless finishes.",
-    image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1400&q=85",
+    image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=75",
     alt: "Wooden lounge chair with textured throw",
   },
   {
     eyebrow: "GATHER & DINE",
     title: "Designed for shared moments.",
     description: "Elevate casual meals and weekend dinners with understated tableware.",
-    image: "https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=1400&q=85",
+    image: "https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=800&q=75",
     alt: "Warm wooden dining table set for a meal",
   },
   {
     eyebrow: "QUIET CORNERS",
     title: "Create a space just for you.",
     description: "Soft lighting and cozy accents for reading, resting, and unwinding.",
-    image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=85",
+    image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=75",
     alt: "Cozy reading nook with warm lamp light",
   },
   {
     eyebrow: "ORGANIZED LIVING",
     title: "Clutter-free spaces, clearer minds.",
     description: "Smart storage solutions that blend seamlessly into your decor.",
-    image: "https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?auto=format&fit=crop&w=1400&q=85",
+    image: "https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?auto=format&fit=crop&w=800&q=75",
     alt: "Clean, organized shelving with ceramic decor",
   },
   {
     eyebrow: "SEASONAL REFRESH",
     title: "Lighter layers for brighter days.",
     description: "Update your living space with breathable fabrics and soft tones.",
-    image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1400&q=85",
+    image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=75",
     alt: "Airy living area with neutral tones and indoor plants",
   },
   {
     eyebrow: "TIMELESS DESIGN",
     title: "Built to stay, made to love.",
     description: "Invest in versatile staples that grow better with every year.",
-    image: "https://images.unsplash.com/photo-1615873968403-89e068629265?auto=format&fit=crop&w=1400&q=85",
+    image: "https://images.unsplash.com/photo-1615873968403-89e068629265?auto=format&fit=crop&w=800&q=75",
     alt: "Classic modern interior with warm wood accents",
   },
 ];
@@ -123,6 +123,7 @@ const PromoCarousel = () => {
   };
 
   const handleTouchStart = (e) => {
+    setIsPaused(true);
     touchStartX.current = e.targetTouches[0].clientX;
   };
 
@@ -131,6 +132,7 @@ const PromoCarousel = () => {
   };
 
   const handleTouchEnd = () => {
+    setIsPaused(false);
     if (!touchStartX.current || !touchEndX.current) return;
 
     const distance = touchStartX.current - touchEndX.current;
@@ -170,7 +172,7 @@ const PromoCarousel = () => {
             transform: `translateX(-${activeIndex * 100}%)`,
           }}
         >
-          {slides.map((slide) => (
+          {slides.map((slide, index) => (
             <article
               key={slide.title}
               className="grid min-w-full grid-cols-1 items-stretch overflow-hidden md:h-[310px] md:grid-cols-2 lg:h-[330px]"
@@ -225,7 +227,9 @@ const PromoCarousel = () => {
                 <img
                   src={slide.image}
                   alt={slide.alt}
-                  loading="lazy"
+                  loading={index === 0 ? "eager" : "lazy"}
+                  fetchpriority={index === 0 ? "high" : "low"}
+                  decoding="async"
                   className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-105"
                 />
               </div>
