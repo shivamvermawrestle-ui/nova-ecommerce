@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 const usePageTitle = (title, description) => {
   useEffect(() => {
-    document.title = title ? `${title} | Hook.` : "Hook.";
+    document.title = title ? `${title} | Nova.` : "Nova.";
 
     let metaDescription = document.querySelector(
       'meta[name="description"]'
